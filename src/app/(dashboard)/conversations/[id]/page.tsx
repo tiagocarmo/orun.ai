@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MessageThread } from "@/components/conversations/message-thread";
 import { ConversationActions } from "@/components/conversations/conversation-actions";
+import { ConversationClient } from "@/components/conversations/conversation-client";
 import { db } from "@/lib/db";
 import { notFound } from "next/navigation";
 
@@ -67,6 +68,7 @@ export default async function ConversationDetailPage({ params }: { params: Promi
         ) : (
           <MessageThread messages={messages} />
         )}
+        <ConversationClient conversationId={conversation.id} />
       </Card>
     </div>
   );
