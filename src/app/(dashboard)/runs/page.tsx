@@ -74,7 +74,7 @@ export default function RunAgentPage() {
     }
     debounceRef.current = setTimeout(() => {
       doSearch(value);
-    }, 3000);
+    }, 500);
   }
 
   function selectLead(lead: LeadResult) {
@@ -138,7 +138,7 @@ export default function RunAgentPage() {
             </select>
           </div>
 
-          <div className="flex flex-col gap-1.5" ref={dropdownRef}>
+          <div className="relative flex flex-col gap-1.5" ref={dropdownRef}>
             <label className="text-sm font-medium text-body">Buscar Lead</label>
             <input
               type="text"
@@ -180,21 +180,23 @@ export default function RunAgentPage() {
             </div>
           )}
 
-          <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-body">Entrada (texto ou JSON)</label>
-            <textarea
-              className="px-3 py-2 rounded-md border border-hairline bg-canvas text-ink text-sm placeholder:text-muted-soft focus:outline-none focus:ring-2 focus:ring-brand-teal/30 focus:border-brand-teal min-h-[120px] resize-y font-mono"
-              placeholder='{"name": "Joao Silva", "email": "joao@exemplo.com"}'
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-            />
-          </div>
+          {!selectedLead && (
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-medium text-body">Entrada (texto ou JSON)</label>
+              <textarea
+                className="px-3 py-2 rounded-md border border-hairline bg-canvas text-ink text-sm placeholder:text-muted-soft focus:outline-none focus:ring-2 focus:ring-brand-teal/30 focus:border-brand-teal min-h-[120px] resize-y font-mono"
+                placeholder='{"name": "Joao Silva", "email": "joao@exemplo.com"}'
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+              />
+            </div>
+          )}
 
           <div className="flex items-center gap-3">
             <Button
               onClick={handleRun}
               loading={status === "running"}
-              disabled={!agentSlug || !input.trim()}
+              disabled={!agentSlug || (!input.trim() && !selectedLead)}
             >
               Executar Agente
             </Button>

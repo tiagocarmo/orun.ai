@@ -4,6 +4,7 @@ import { ConversationList } from "@/components/conversations/conversation-list";
 
 export default async function ConversationsPage() {
   const conversations = await db.conversation.findMany({
+    where: { status: { not: "archived" } },
     include: {
       lead: { select: { name: true, email: true, company: true } },
       messages: {

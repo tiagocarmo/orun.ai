@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { agentRegistry } from "./registry";
+import { agentRegistry } from "./index";
 import { AgentContext, AgentExecuteResult } from "./types";
 
 export async function executeAgent(

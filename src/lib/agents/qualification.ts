@@ -11,8 +11,8 @@ export class QualificationAgent extends AbstractAgent {
   definition(): AgentDefinition {
     return {
       slug: "qualification",
-      name: "Qualification Agent",
-      description: "Qualifies leads based on criteria and optional LLM analysis",
+      name: "Agente de Qualificação",
+      description: "Qualifica leads com base em critérios e análise opcional por LLM",
     };
   }
 

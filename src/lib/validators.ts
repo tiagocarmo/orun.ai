@@ -46,6 +46,11 @@ export const addMessageSchema = z.object({
   metadata: z.record(z.unknown()).optional(),
 });
 
+export const updateConversationSchema = z.object({
+  status: z.enum(["active", "closed", "archived"]).optional(),
+  title: z.string().max(200).optional(),
+});
+
 // Agent Run schemas
 export const runAgentSchema = z.object({
   agentSlug: z.string(),
@@ -88,6 +93,7 @@ export type CreateLeadInput = z.infer<typeof createLeadSchema>;
 export type UpdateLeadInput = z.infer<typeof updateLeadSchema>;
 export type CreateConversationInput = z.infer<typeof createConversationSchema>;
 export type AddMessageInput = z.infer<typeof addMessageSchema>;
+export type UpdateConversationInput = z.infer<typeof updateConversationSchema>;
 export type RunAgentInput = z.infer<typeof runAgentSchema>;
 export type CreateWorkflowInput = z.infer<typeof createWorkflowSchema>;
 export type CreateDocumentInput = z.infer<typeof createDocumentSchema>;

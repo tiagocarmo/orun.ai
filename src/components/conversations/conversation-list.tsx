@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
+import { ConversationActions } from "./conversation-actions";
 
 interface Conversation {
   id: string;
@@ -36,8 +37,8 @@ export function ConversationList({ conversations }: ConversationListProps) {
   return (
     <div className="space-y-2">
       {conversations.map((conv) => (
-        <Link key={conv.id} href={`/conversations/${conv.id}`}>
-          <div className="bg-surface-card border border-hairline rounded-lg p-4 hover:bg-surface-strong transition-colors cursor-pointer">
+        <div key={conv.id} className="bg-surface-card border border-hairline rounded-lg p-4">
+          <Link href={`/conversations/${conv.id}`} className="block hover:bg-surface-strong transition-colors rounded-md -m-2 p-2">
             <div className="flex items-start justify-between gap-4">
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2 mb-1">
@@ -61,8 +62,11 @@ export function ConversationList({ conversations }: ConversationListProps) {
                 <p className="text-xs text-muted-soft mt-0.5">{conv.updatedAt}</p>
               </div>
             </div>
+          </Link>
+          <div className="flex justify-end mt-2 pt-2 border-t border-hairline">
+            <ConversationActions conversationId={conv.id} currentStatus={conv.status} />
           </div>
-        </Link>
+        </div>
       ))}
     </div>
   );

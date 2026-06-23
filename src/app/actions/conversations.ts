@@ -1,7 +1,7 @@
 "use server";
 
 import { db } from "@/lib/db";
-import { createConversationSchema, addMessageSchema } from "@/lib/validators";
+import { createConversationSchema, addMessageSchema, updateConversationSchema } from "@/lib/validators";
 import { ApiResponse, ConversationWithMessages, PaginatedResponse } from "@/lib/types";
 import { revalidatePath } from "next/cache";
 
@@ -30,6 +30,34 @@ export async function createConversation(
   revalidatePath("/dashboard");
 
   return { success: true, data: { id: conversation.id } };
+}
+
+export async function updateConversation(
+  id: string,
+  data: Record<string, unknown>
+): Promise<ApiResponse<{ id: string }>> {
+  const validation = updateConversationSchema.safeParse(data);
+  if (!validation.success) {
+    return {
+      success: false,
+      error: "Validation failed",
+      details: validation.error.flatten().fieldErrors as Record<string, string[]>,
+    };
+  }
+
+  const conversation = await db.conversation.findUnique({ where: { id } });
+  if (!conversation) {
+    return { success: false, error: `Conversation '${id}' not found` };
+  }
+
+  const updated = await db.conversation.update({
+    where: { id },
+    data: validation.data,
+  });
+
+  revalidatePath("/conversations");
+
+  return { success: true, data: { id: updated.id } };
 }
 
 export async function addMessage(

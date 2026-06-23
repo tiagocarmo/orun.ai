@@ -7,8 +7,8 @@ export class LeadIntakeAgent extends AbstractAgent {
   definition(): AgentDefinition {
     return {
       slug: "lead-intake",
-      name: "Lead Intake Agent",
-      description: "Receives and validates new leads from external sources",
+      name: "Agente de Captação de Leads",
+      description: "Recebe e valida novos leads de fontes externas",
     };
   }
 
