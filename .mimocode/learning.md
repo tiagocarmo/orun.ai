@@ -183,3 +183,34 @@ Começar com dados mock no WS-C e substituir por Prisma queries na integração 
 - Commit messages devem refletir O QUE FOI REALMENTE FEITO, nao o que estava planejado
 - Sempre verificar implementacao antes de commitar
 - Usar tlc-spec-driven para planejamento: Specify → Execute com verificacao
+
+---
+
+## Sessão 5 — Correção de inicialização da extensão Codex VS Code
+
+### Manifestos de plugin do Codex têm limites rígidos
+
+- O campo `interface.defaultPrompt` em `plugin.json` aceita no máximo 128 caracteres por item
+- Um manifesto inválido pode não quebrar o CLI inteiro, mas gera warning na subida do `codex app-server` e pode ser propagado pela extensão como erro de inicialização
+
+### Diagnóstico eficaz
+
+- O caminho do arquivo problemático já vinha no log do VS Code; seguir esse path foi o jeito mais rápido de isolar a causa raiz
+- Antes de alterar qualquer coisa, medir o tamanho real da string evitou correções por tentativa e erro
+
+---
+
+## Sessão 6 — Warning IPC client-status-changed da extensão Codex
+
+### Broadcast de presença não deve virar warning operacional
+
+- A extensão Codex usa um router IPC local e emite `client-status-changed` quando clientes conectam/desconectam
+- O bundle atual registra warning quando qualquer broadcast chega sem handler
+- Para `client-status-changed`, isso pode ocorrer durante startup/reconexão antes da webview registrar handlers
+- Correção local segura: ignorar o warning apenas para `client-status-changed` e manter warnings para outros broadcasts
+
+### Cuidados ao corrigir extensões instaladas
+
+- Sempre criar backup do bundle antes de patch local
+- Validar sintaxe com `node --check`
+- Registrar que atualização/reinstalação da extensão pode sobrescrever o patch

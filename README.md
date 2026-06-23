@@ -93,3 +93,8 @@ src/
 - `docs/features/` — documentação por feature
 - `.mimocode/learning.md` — aprendizados do projeto
 - `.mimocode/session/` — histórico de sessões
+
+## Troubleshooting
+
+- Codex VS Code extension: plugins locais do Codex precisam respeitar os limites do manifesto. Em `interface.defaultPrompt`, cada prompt deve ter no máximo 128 caracteres para evitar warnings na inicialização do `codex app-server`.
+- Codex VS Code extension: o warning IPC `client-status-changed` foi corrigido com patch local no bundle instalado da extensão; ao atualizar/reinstalar a extensão, reaplicar ou remover o patch conforme a versão oficial.
