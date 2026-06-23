@@ -60,8 +60,8 @@ export default function NewAgentPage() {
   return (
     <div className="max-w-2xl space-y-6">
       <div>
-        <h1 className="text-2xl font-display font-semibold text-ink">Create Agent</h1>
-        <p className="text-sm text-muted mt-1">Define a new AI agent configuration</p>
+        <h1 className="text-2xl font-display font-semibold text-ink">Criar Agente</h1>
+        <p className="text-sm text-muted mt-1">Configure um novo agente de IA</p>
       </div>
 
       {error && (
@@ -72,28 +72,28 @@ export default function NewAgentPage() {
 
       <Card>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <CardTitle>Agent Details</CardTitle>
+          <CardTitle>Detalhes do Agente</CardTitle>
 
           <Input
-            label="Name"
-            placeholder="e.g. Lead Intake Agent"
+            label="Nome"
+            placeholder="ex. Lead Intake Agent"
             value={form.name}
             onChange={(e) => updateField("name", e.target.value)}
             required
           />
 
           <Input
-            label="Description"
-            placeholder="What does this agent do?"
+            label="Descrição"
+            placeholder="O que este agente faz?"
             value={form.description}
             onChange={(e) => updateField("description", e.target.value)}
           />
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-body">System Prompt</label>
+            <label className="text-sm font-medium text-body">Prompt do Sistema</label>
             <textarea
               className="px-3 py-2 rounded-md border border-hairline bg-canvas text-ink text-sm placeholder:text-muted-soft focus:outline-none focus:ring-2 focus:ring-brand-teal/30 focus:border-brand-teal min-h-[160px] resize-y"
-              placeholder="Enter the system prompt for this agent..."
+              placeholder="Digite o prompt do sistema para este agente..."
               value={form.prompt}
               onChange={(e) => updateField("prompt", e.target.value)}
               required
@@ -102,7 +102,7 @@ export default function NewAgentPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-body">Model</label>
+              <label className="text-sm font-medium text-body">Modelo</label>
               <select
                 className="px-3 py-2 rounded-md border border-hairline bg-canvas text-ink text-sm focus:outline-none focus:ring-2 focus:ring-brand-teal/30 focus:border-brand-teal"
                 value={form.model}
@@ -115,14 +115,16 @@ export default function NewAgentPage() {
             </div>
 
             <Input
-              label="Max Tokens"
+              label="Máximo de Tokens"
               type="number"
+              step="1"
+              min="1"
               value={form.maxTokens}
               onChange={(e) => updateField("maxTokens", e.target.value)}
             />
 
             <Input
-              label="Temperature"
+              label="Temperatura"
               type="number"
               step="0.1"
               min="0"
@@ -134,10 +136,10 @@ export default function NewAgentPage() {
 
           <div className="flex gap-2 justify-end pt-2">
             <Button variant="ghost" type="button" onClick={() => router.back()}>
-              Cancel
+              Cancelar
             </Button>
             <Button type="submit" loading={saving}>
-              Create Agent
+              Criar Agente
             </Button>
           </div>
         </form>

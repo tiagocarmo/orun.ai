@@ -35,11 +35,23 @@ export function LeadForm({ initialData, leadId }: LeadFormProps) {
   const router = useRouter();
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touched, setTouched] = useState(false);
   const isEdit = !!leadId;
   const [form, setForm] = useState<LeadFormData>({
     ...defaultData,
     ...initialData,
   });
+
+  function validate() {
+    const newErrors: Record<string, string> = {};
+    if (!form.name.trim()) newErrors.name = "Nome é obrigatório";
+    if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      newErrors.email = "Email inválido";
+    }
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }
 
   function updateField(key: keyof LeadFormData, value: string) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -47,6 +59,10 @@ export function LeadForm({ initialData, leadId }: LeadFormProps) {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    setTouched(true);
+
+    if (!validate()) return;
+
     setSaving(true);
     setError(null);
 
@@ -89,10 +105,11 @@ export function LeadForm({ initialData, leadId }: LeadFormProps) {
         <CardTitle>{isEdit ? "Editar Lead" : "Criar Lead"}</CardTitle>
 
         <Input
-          label="Name"
-          placeholder="Full name"
+          label="Nome"
+          placeholder="Nome completo"
           value={form.name}
           onChange={(e) => updateField("name", e.target.value)}
+          error={touched ? errors.name : undefined}
           required
         />
 
@@ -100,12 +117,13 @@ export function LeadForm({ initialData, leadId }: LeadFormProps) {
           <Input
             label="Email"
             type="email"
-            placeholder="email@example.com"
+            placeholder="email@exemplo.com"
             value={form.email}
             onChange={(e) => updateField("email", e.target.value)}
+            error={touched ? errors.email : undefined}
           />
           <Input
-            label="Phone"
+            label="Telefone"
             type="tel"
             placeholder="+55 11 99999-0000"
             value={form.phone}
@@ -115,14 +133,14 @@ export function LeadForm({ initialData, leadId }: LeadFormProps) {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <Input
-            label="Company"
-            placeholder="Company name"
+            label="Empresa"
+            placeholder="Nome da empresa"
             value={form.company}
             onChange={(e) => updateField("company", e.target.value)}
           />
           <Input
-            label="Source"
-            placeholder="e.g. webhook, referral, website"
+            label="Origem"
+            placeholder="ex. webhook, indicação, site"
             value={form.source}
             onChange={(e) => updateField("source", e.target.value)}
           />

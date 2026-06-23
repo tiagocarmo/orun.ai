@@ -77,14 +77,14 @@ export default function EditAgentPage({ params }: { params: Promise<{ id: string
   }
 
   if (loading) {
-    return <p className="text-sm text-muted">Loading agent...</p>;
+    return <p className="text-sm text-muted">Carregando agente...</p>;
   }
 
   return (
     <div className="max-w-2xl space-y-6">
       <div>
-        <h1 className="text-2xl font-display font-semibold text-ink">Edit Agent</h1>
-        <p className="text-sm text-muted mt-1">Update agent configuration</p>
+        <h1 className="text-2xl font-display font-semibold text-ink">Editar Agente</h1>
+        <p className="text-sm text-muted mt-1">Atualizar configuração do agente</p>
       </div>
 
       {error && (
@@ -95,23 +95,23 @@ export default function EditAgentPage({ params }: { params: Promise<{ id: string
 
       <Card>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <CardTitle>Agent Details</CardTitle>
+          <CardTitle>Detalhes do Agente</CardTitle>
 
           <Input
-            label="Name"
+            label="Nome"
             value={form.name}
             onChange={(e) => updateField("name", e.target.value)}
             required
           />
 
           <Input
-            label="Description"
+            label="Descrição"
             value={form.description}
             onChange={(e) => updateField("description", e.target.value)}
           />
 
           <div className="flex flex-col gap-1.5">
-            <label className="text-sm font-medium text-body">System Prompt</label>
+            <label className="text-sm font-medium text-body">Prompt do Sistema</label>
             <textarea
               className="px-3 py-2 rounded-md border border-hairline bg-canvas text-ink text-sm placeholder:text-muted-soft focus:outline-none focus:ring-2 focus:ring-brand-teal/30 focus:border-brand-teal min-h-[160px] resize-y"
               value={form.prompt}
@@ -122,7 +122,7 @@ export default function EditAgentPage({ params }: { params: Promise<{ id: string
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-body">Model</label>
+              <label className="text-sm font-medium text-body">Modelo</label>
               <select
                 className="px-3 py-2 rounded-md border border-hairline bg-canvas text-ink text-sm focus:outline-none focus:ring-2 focus:ring-brand-teal/30 focus:border-brand-teal"
                 value={form.model}
@@ -135,14 +135,16 @@ export default function EditAgentPage({ params }: { params: Promise<{ id: string
             </div>
 
             <Input
-              label="Max Tokens"
+              label="Máximo de Tokens"
               type="number"
+              step="1"
+              min="1"
               value={form.maxTokens}
               onChange={(e) => updateField("maxTokens", e.target.value)}
             />
 
             <Input
-              label="Temperature"
+              label="Temperatura"
               type="number"
               step="0.1"
               min="0"
@@ -154,10 +156,10 @@ export default function EditAgentPage({ params }: { params: Promise<{ id: string
 
           <div className="flex gap-2 justify-end pt-2">
             <Button variant="ghost" type="button" onClick={() => router.back()}>
-              Cancel
+              Cancelar
             </Button>
             <Button type="submit" loading={saving}>
-              Save Changes
+              Atualizar Agente
             </Button>
           </div>
         </form>
