@@ -161,3 +161,25 @@ Começar com dados mock no WS-C e substituir por Prisma queries na integração 
 - Lint: ✅ sem warnings
 - Build: ✅ sucesso
 - Version: 0.1.1 → 0.2.0 (minor — novas funcionalidades)
+
+---
+
+## Sessão 4 — Correção de Feedback UI v2 (tlc-spec-driven)
+
+### O que aconteceu
+
+- Commit `c4edf24` dizia ter implementado tudo, mas na realidade sidebar, busca e conversas NAO foram implementados
+- Apenas Modal, Lead CRUD e traducao foram realmente feitos
+
+### Correções realizadas
+
+- **Sidebar:** `lg:static` → `lg:fixed` + `h-screen` no container + `lg:ml-64` no wrapper
+- **Run Agent:** textarea JSON substituido por busca de leads com autocomplete (3s debounce, min 3 letras, max 3 resultados)
+- **Conversas:** query enriquecida com email, empresa do lead; interface com mais contexto
+- **searchLeads:** nova server action adicionada em leads.ts
+
+### Lições
+
+- Commit messages devem refletir O QUE FOI REALMENTE FEITO, nao o que estava planejado
+- Sempre verificar implementacao antes de commitar
+- Usar tlc-spec-driven para planejamento: Specify → Execute com verificacao

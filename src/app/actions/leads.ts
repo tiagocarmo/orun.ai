@@ -164,6 +164,29 @@ export async function updateLead(
   return { success: true, data: { id: lead.id } };
 }
 
+export async function searchLeads(
+  query: string
+): Promise<ApiResponse<{ id: string; name: string; email: string | null; company: string | null; phone: string | null }[]>> {
+  if (!query || query.length < 3) {
+    return { success: true, data: [] };
+  }
+
+  const leads = await db.lead.findMany({
+    where: {
+      OR: [
+        { name: { contains: query } },
+        { email: { contains: query } },
+        { company: { contains: query } },
+      ],
+    },
+    select: { id: true, name: true, email: true, company: true, phone: true },
+    take: 3,
+    orderBy: { name: "asc" },
+  });
+
+  return { success: true, data: leads };
+}
+
 export async function deleteLead(
   id: string
 ): Promise<ApiResponse<{ deleted: boolean }>> {

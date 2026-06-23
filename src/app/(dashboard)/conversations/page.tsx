@@ -5,7 +5,7 @@ import { ConversationList } from "@/components/conversations/conversation-list";
 export default async function ConversationsPage() {
   const conversations = await db.conversation.findMany({
     include: {
-      lead: { select: { name: true } },
+      lead: { select: { name: true, email: true, company: true } },
       messages: {
         orderBy: { createdAt: "desc" },
         take: 1,
@@ -17,25 +17,30 @@ export default async function ConversationsPage() {
 
   const items = conversations.map((conv) => ({
     id: conv.id,
-    title: conv.title ?? `Conversation ${conv.id.slice(0, 8)}`,
+    title: conv.title ?? `Conversa ${conv.id.slice(0, 8)}`,
     status: conv.status,
-    leadName: conv.lead?.name ?? "Unknown",
+    leadName: conv.lead?.name ?? "Desconhecido",
+    leadEmail: conv.lead?.email ?? null,
+    leadCompany: conv.lead?.company ?? null,
     messageCount: conv._count.messages,
-    lastMessage: conv.messages[0]?.content ?? "No messages yet.",
+    lastMessage: conv.messages[0]?.content ?? "Nenhuma mensagem ainda.",
+    lastMessageAt: conv.messages[0]?.createdAt
+      ? new Date(conv.messages[0].createdAt).toLocaleString("pt-BR")
+      : null,
     updatedAt: new Date(conv.updatedAt).toLocaleString("pt-BR"),
   }));
 
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-display font-semibold text-ink">Conversations</h1>
-        <p className="text-sm text-muted mt-1">View and manage conversations</p>
+        <h1 className="text-2xl font-display font-semibold text-ink">Conversas</h1>
+        <p className="text-sm text-muted mt-1">Visualize e gerencie conversas</p>
       </div>
 
       {items.length === 0 ? (
         <EmptyState
-          title="No conversations found"
-          description="Conversations will appear here once agents start interacting with leads."
+          title="Nenhuma conversa encontrada"
+          description="Conversas aparecerao aqui quando os agentes comecarem a interagir com leads."
         />
       ) : (
         <ConversationList conversations={items} />
