@@ -288,6 +288,15 @@ Monitorar execuções, falhas, tempos de resposta e qualidade dos agentes.
 
 ---
 
+## Autoload
+
+Os seguintes arquivos devem ser carregados em toda sessão do assistente:
+* `CLAUDE.md` — regras de código, commits, versioning
+* `AGENTS.md` — este arquivo, especificação do projeto
+* `README.md` — visão geral e convenções
+
+---
+
 ## Regras para IA
 
 * Sempre atualizar os documentos de implantação docs/features/{{NAME}}.md
@@ -296,6 +305,22 @@ Monitorar execuções, falhas, tempos de resposta e qualidade dos agentes.
 * Sempre atualizar o readme.
 * Toda tarefa deve ser versionada usando Semantic Versioning 2.0.0, https://semver.org/
 * Commits devem ser feitos usando Conventional Commits, https://www.conventionalcommits.org/en/v1.0.0/
+
+---
+
+## Checklist de Conclusão de Tarefa
+
+Ao finalizar qualquer tarefa, o assistente DEVE:
+
+1. Rodar testes (`npm test`)
+2. Rodar build (`npm run build`)
+3. Rodar lint (`npm run lint`)
+4. Rodar typecheck (`npm run typecheck`)
+5. Validar carregamento da página inicial (quando aplicável)
+6. Atualizar versão no `package.json` (semver)
+7. Documentar aprendizados em `.mimocode/learning.md`
+8. Salvar sessão em `.mimocode/session/{{SESSION_ID}}.md`
+9. Criar commit com Conventional Commits
 
 
 ---
