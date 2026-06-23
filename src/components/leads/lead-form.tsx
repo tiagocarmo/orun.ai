@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -66,9 +67,11 @@ export function LeadForm({ initialData, leadId }: LeadFormProps) {
     }
 
     if (result.success) {
+      toast.success(leadId ? "Lead atualizado com sucesso" : "Lead criado com sucesso");
       router.push(leadId ? `/leads/${leadId}` : "/leads");
       router.refresh();
     } else {
+      toast.error(result.error || "Erro ao salvar lead");
       setError(result.error);
       setSaving(false);
     }

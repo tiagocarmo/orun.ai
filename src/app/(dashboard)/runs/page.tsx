@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { toast } from "sonner";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -104,9 +105,11 @@ export default function RunAgentPage() {
     const res = await runAgent(agentSlug, parsedInput);
 
     if (res.success) {
+      toast.success("Agente executado com sucesso");
       setStatus("completed");
       setResult(JSON.stringify(res.data, null, 2));
     } else {
+      toast.error(res.error || "Erro ao executar agente");
       setStatus("failed");
       setResult(JSON.stringify({ error: res.error }, null, 2));
     }

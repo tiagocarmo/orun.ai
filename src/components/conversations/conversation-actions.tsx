@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { updateConversation } from "@/app/actions/conversations";
@@ -21,8 +22,11 @@ export function ConversationActions({ conversationId, currentStatus }: Conversat
     const newStatus = currentStatus === "archived" ? "active" : "archived";
     const result = await updateConversation(conversationId, { status: newStatus });
     if (result.success) {
+      toast.success(newStatus === "archived" ? "Conversa arquivada" : "Conversa desarquivada");
       setArchiveModalOpen(false);
       router.refresh();
+    } else {
+      toast.error("Erro ao processar");
     }
     setLoading(false);
   }

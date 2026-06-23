@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { updateLead, deleteLead } from "@/app/actions/leads";
@@ -16,13 +17,17 @@ export function LeadActions({ leadId, currentStatus }: LeadActionsProps) {
   const [archiveModalOpen, setArchiveModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const isArchived = currentStatus === "archived";
 
   async function handleArchive() {
     setLoading(true);
     const result = await updateLead(leadId, { status: "archived" });
     if (result.success) {
+      toast.success(isArchived ? "Lead desarquivado" : "Lead arquivado");
       setArchiveModalOpen(false);
       router.refresh();
+    } else {
+      toast.error("Erro ao processar");
     }
     setLoading(false);
   }
@@ -31,13 +36,14 @@ export function LeadActions({ leadId, currentStatus }: LeadActionsProps) {
     setLoading(true);
     const result = await deleteLead(leadId);
     if (result.success) {
+      toast.success("Lead excluído");
       setDeleteModalOpen(false);
       router.push("/leads");
+    } else {
+      toast.error("Erro ao processar");
     }
     setLoading(false);
   }
-
-  const isArchived = currentStatus === "archived";
 
   return (
     <>

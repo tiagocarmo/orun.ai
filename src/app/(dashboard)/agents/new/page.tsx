@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -47,8 +48,10 @@ export default function NewAgentPage() {
     });
 
     if (result.success) {
+      toast.success("Agente criado com sucesso");
       router.push("/agents");
     } else {
+      toast.error(result.error || "Erro ao criar agente");
       setError(result.error);
       setSaving(false);
     }

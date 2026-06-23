@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -66,8 +67,10 @@ export default function EditAgentPage({ params }: { params: Promise<{ id: string
     });
 
     if (result.success) {
+      toast.success("Agente atualizado com sucesso");
       router.push(`/agents/${agentId}`);
     } else {
+      toast.error(result.error || "Erro ao atualizar agente");
       setError(result.error);
       setSaving(false);
     }
