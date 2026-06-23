@@ -1,7 +1,11 @@
 import Link from "next/link";
-import { Card, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { db } from "@/lib/db";
+import { LeadsOverTimeChart } from "@/components/dashboard/leads-over-time-chart";
+import { AgentPerformanceChart } from "@/components/dashboard/agent-performance-chart";
+import { LeadStatusPie } from "@/components/dashboard/lead-status-pie";
+import { ActivityFeed } from "@/components/dashboard/activity-feed";
 
 export default async function DashboardPage() {
   const [totalLeads, qualifiedLeads, activeAgents, recentRuns, recentEvents] =
@@ -12,7 +16,7 @@ export default async function DashboardPage() {
       db.agentRun.count(),
       db.leadEvent.findMany({
         orderBy: { createdAt: "desc" },
-        take: 5,
+        take: 10,
         include: { lead: { select: { name: true } } },
       }),
     ]);
@@ -26,8 +30,51 @@ export default async function DashboardPage() {
 
   const recentActivity = recentEvents.map((event) => ({
     id: event.id,
-    text: `${event.lead?.name ?? "Unknown"} — ${event.type}`,
-    time: formatRelativeTime(event.createdAt),
+    type: event.type,
+    leadName: event.lead?.name ?? "Unknown",
+    createdAt: formatRelativeTime(event.createdAt),
+  }));
+
+  // Leads over time (last 30 days)
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  const leadsByDate = await db.lead.groupBy({
+    by: ["createdAt"],
+    _count: { id: true },
+    where: { createdAt: { gte: thirtyDaysAgo } },
+    orderBy: { createdAt: "asc" },
+  });
+
+  const leadsOverTimeData = leadsByDate.map((item) => ({
+    date: new Date(item.createdAt).toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit" }),
+    count: item._count.id,
+  }));
+
+  // Agent performance
+  const agentRuns = await db.agentRun.groupBy({
+    by: ["agentId"],
+    _count: { id: true },
+  });
+
+  const agentIds = agentRuns.map((ar) => ar.agentId);
+  const agents = await db.agent.findMany({ where: { id: { in: agentIds } } });
+  const agentMap = new Map(agents.map((a) => [a.id, a.name]));
+
+  const agentPerformanceData = agentRuns.map((ar) => ({
+    name: agentMap.get(ar.agentId) ?? "Unknown",
+    runs: ar._count.id,
+  }));
+
+  // Lead status distribution
+  const statusCounts = await db.lead.groupBy({
+    by: ["status"],
+    _count: { id: true },
+  });
+
+  const statusData = statusCounts.map((sc) => ({
+    name: sc.status ?? "Unknown",
+    value: sc._count.id,
   }));
 
   return (
@@ -58,21 +105,15 @@ export default async function DashboardPage() {
         ))}
       </div>
 
-      <Card>
-        <CardTitle>Recent Activity</CardTitle>
-        <div className="divide-y divide-hairline-soft mt-2">
-          {recentActivity.length === 0 ? (
-            <p className="text-sm text-muted py-3">No recent activity.</p>
-          ) : (
-            recentActivity.map((item) => (
-              <div key={item.id} className="flex items-center justify-between py-3">
-                <p className="text-sm text-body">{item.text}</p>
-                <span className="text-xs text-muted-soft whitespace-nowrap ml-4">{item.time}</span>
-              </div>
-            ))
-          )}
-        </div>
-      </Card>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <LeadsOverTimeChart data={leadsOverTimeData} />
+        <AgentPerformanceChart data={agentPerformanceData} />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <LeadStatusPie data={statusData} />
+        <ActivityFeed events={recentActivity} />
+      </div>
     </div>
   );
 }
