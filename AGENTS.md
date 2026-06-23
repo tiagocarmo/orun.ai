@@ -8,6 +8,20 @@ Plataforma para criação, configuração e execução de agentes de IA especial
 
 ---
 
+## Origem e Embasamento
+
+Este documento deriva do chat original consolidado nos documentos base, que registrou a evolução do projeto:
+
+1. escolha do nome Orun.AI a partir de uma associação simbólica com sabedoria, visão e caminhos;
+2. definição de identidade institucional baseada em "Visão além do tempo. Inteligência além do óbvio.";
+3. investigação de agentes de IA, MCP e frameworks JavaScript/TypeScript;
+4. análise de fluxos comerciais com leads, WhatsApp, Google Drive, LinkedIn, CRM, documentos e base vetorial;
+5. transformação da ideia em uma **AI Workforce Platform**.
+
+Os agentes abaixo devem preservar essa coerência: não são bots genéricos, mas funções digitais especializadas, auditáveis e coordenadas por workflows.
+
+---
+
 ## Stack
 
 * **Framework:** Next.js
@@ -18,6 +32,8 @@ Plataforma para criação, configuração e execução de agentes de IA especial
 * **Execução dos agentes:** Server Actions / API Routes / background jobs
 * **IA:** APIs externas de LLM
 * **Protocolo de integração:** MCP — Model Context Protocol
+
+> Nota: no contexto do projeto, MCP significa prioritariamente **Model Context Protocol**. "Multi-component planning" aparece como capacidade desejada dos agentes e do Orchestrator, mas não substitui o protocolo MCP.
 
 ---
 
@@ -34,6 +50,15 @@ Cada agente deve ter:
 * Limites de ação
 * Possibilidade de intervenção humana
 * Registro de decisões relevantes
+
+## Princípios de Agentes
+
+* Agentes devem ser especialistas, não generalistas autônomos sem limites.
+* Todo agente deve declarar contrato de entrada, contrato de saída e limites de ação.
+* Decisões de alto impacto devem ser justificadas.
+* O Orchestrator coordena; agentes executam responsabilidades de domínio.
+* Ações externas sensíveis exigem aprovação humana.
+* Prompts e critérios devem ser versionados e testáveis.
 
 ---
 
@@ -234,7 +259,38 @@ Sincronizar dados dos leads e oportunidades com sistemas externos.
 
 ---
 
-## 8. Human Handoff Agent
+## 8. Research Agent
+
+### Responsabilidade
+
+Enriquecer informações de leads, empresas e oportunidades a partir de fontes externas permitidas.
+
+### Entradas
+
+* Lead
+* Empresa
+* Fontes autorizadas
+* Objetivo da pesquisa
+* Limites de coleta
+
+### Saídas
+
+* Perfil enriquecido
+* Resumo da empresa
+* Sinais comerciais
+* Fontes consultadas
+* Grau de confiança
+
+### Regras
+
+* Não fazer scraping proibido por termos de uso
+* Registrar fontes consultadas
+* Separar fato, inferência e hipótese
+* Encaminhar incertezas relevantes ao humano
+
+---
+
+## 9. Human Handoff Agent
 
 ### Responsabilidade
 
@@ -261,7 +317,7 @@ Identificar quando a automação deve ser interrompida e transferida para uma pe
 
 ---
 
-## 9. Monitoring Agent
+## 10. Monitoring Agent
 
 ### Responsabilidade
 

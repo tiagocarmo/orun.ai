@@ -13,6 +13,19 @@ Sempre carregar e considerar:
 - `AGENTS.md` — especificação do projeto, agentes, modelo de dados
 - `README.md` — visão geral, stack, como rodar
 
+## Fontes Canônicas do Projeto
+
+Para decisões de produto e arquitetura, usar esta ordem:
+
+1. `README.md` — visão consolidada e ponto de entrada
+2. `docs/prd.md` — requisitos e escopo de produto
+3. `AGENTS.md` — contratos e regras dos agentes
+4. `docs/workflows.md` — fluxos oficiais
+5. `docs/orchestrator.md` — coordenação, contexto e MCP
+6. `DESIGN.md` — identidade e princípios visuais
+
+Quando houver divergência, atualizar os documentos canônicos e registrar a decisão na documentação da feature.
+
 ---
 
 ## Planejamento Obrigatório

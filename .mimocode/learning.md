@@ -236,3 +236,23 @@ Começar com dados mock no WS-C e substituir por Prisma queries na integração 
 - A auditoria foi gravada em `docs/codex-report/`.
 - A feature documental foi registrada em `docs/features/codex-report.md`.
 - A tarefa foi rastreada em `.specs/features/codex-report-audit/`.
+
+---
+
+## Sessão 8 — Alinhamento dos Documentos Base ao Chat Original
+
+### Chat bruto não deve virar requisito direto
+
+- O chat original continha origem, pesquisa, decisões e rascunhos, mas foi consolidado nos documentos base e removido como arquivo separado.
+- Os documentos canônicos (`README`, `PRD`, `AGENTS`, `workflows`, `orchestrator`, `DESIGN`, `CLAUDE`) devem carregar apenas o que foi curado e estabilizado.
+
+### Identidade Orun.AI
+
+- A marca nasceu da associação com Orun/Orunmilá/Ifá: sabedoria, visão, caminhos e orientação.
+- Essa inspiração deve ser institucional e respeitosa, sem prometer adivinhação ou usar linguagem religiosa como funcionalidade.
+
+### Coerência arquitetural
+
+- MCP deve significar Model Context Protocol no projeto.
+- Multi-component planning é uma capacidade desejada de orquestração, não o nome do protocolo.
+- O produto saiu de uma ideia de IA preditiva/site institucional para uma AI Workforce Platform com foco inicial em automação comercial.

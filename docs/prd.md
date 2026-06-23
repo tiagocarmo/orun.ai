@@ -1,10 +1,43 @@
 # PRD — Plataforma de Automação Comercial com Agentes de IA
 
+## Origem do Produto
+
+Este PRD deriva do chat original que originou o produto e foi consolidado nesta documentação base.
+
+A conversa começou com a busca por um nome para um software de inteligência artificial inspirado em sabedoria, visão além do óbvio, caminhos e leitura de contexto. A escolha **Orun.AI** veio da associação simbólica com Orun/Orunmilá/Ifá, em tom respeitoso e metafórico: uma inteligência capaz de analisar sinais, conectar passado e presente e orientar decisões futuras sem prometer adivinhação ou substituir julgamento humano.
+
+Em seguida, a investigação evoluiu para três frentes:
+
+* cenário recente de agentes de IA, MCP e implementações em JavaScript/TypeScript;
+* análise de workflows comerciais envolvendo leads, WhatsApp, Google Drive, documentos, CRM, LinkedIn e base vetorial;
+* transformação da ideia inicial em uma plataforma de **AI Workforce**, com agentes especializados, workflow builder, MCP server builder, knowledge builder, orquestração multiagente e observabilidade.
+
+Portanto, este documento consolida uma tese: **Orun.AI deve começar resolvendo automação comercial, mas ser desenhado como plataforma extensível de workforce digital auditável**.
+
+---
+
 ## Visão Geral
 
 Criar uma plataforma de automação comercial baseada em agentes de IA capaz de conduzir todo o ciclo de pré-vendas, qualificação, agendamento, preparação documental, gestão de conhecimento e acompanhamento de reuniões.
 
 A solução deverá atuar como uma força de trabalho digital composta por múltiplos agentes especializados, operando de forma coordenada através de workflows automatizados.
+
+## Posicionamento
+
+Orun.AI não deve ser apenas um chatbot, nem uma automação linear de WhatsApp. O produto deve se posicionar como uma plataforma de operações assistidas por agentes:
+
+* agentes executam responsabilidades específicas;
+* workflows conectam etapas, integrações e aprovações humanas;
+* o Orchestrator planeja, delega e consolida resultados;
+* MCP fornece a camada de integração com ferramentas externas;
+* observabilidade permite auditar custo, qualidade, falhas e decisões.
+
+## Hipóteses de Produto
+
+* Empresas brasileiras têm demanda crescente por IA aplicada a processos comerciais, mas precisam de controle, rastreabilidade e segurança.
+* O ecossistema JavaScript/TypeScript já é suficiente para um MVP produtivo usando APIs externas de LLM e servidores MCP.
+* O diferencial não é autonomia irrestrita, mas confiabilidade: agentes especializados, revisáveis e com intervenção humana em pontos sensíveis.
+* A jornada comercial é o primeiro domínio porque concentra tarefas repetitivas, alto volume de contexto e impacto mensurável em produtividade.
 
 ---
 
@@ -39,6 +72,14 @@ A plataforma deve funcionar como um colaborador virtual capaz de:
 * Atualizar sistemas
 * Executar follow-ups
 * Alertar equipes humanas
+
+## Não Objetivos
+
+* Prometer predição infalível, clarividência literal ou substituição do julgamento humano.
+* Construir agentes totalmente autônomos sem revisão.
+* Começar com marketplace, billing ou multi-tenant avançado.
+* Depender de Python para o núcleo do MVP.
+* Salvar segredos de integrações no banco de dados.
 
 ---
 

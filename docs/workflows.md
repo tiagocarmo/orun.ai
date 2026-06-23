@@ -6,6 +6,22 @@ Este documento descreve os workflows oficiais da plataforma **Orun.AI Workforce 
 
 Um workflow representa uma sequência de etapas executadas por agentes, usuários, integrações externas ou sistemas automatizados.
 
+## Origem dos Workflows
+
+Os workflows foram extraídos e consolidados a partir do chat original do projeto, especialmente dos fluxos discutidos para:
+
+* captura e enriquecimento de leads;
+* scraping/resumo de LinkedIn;
+* agendamento e lembretes;
+* follow-up via WhatsApp;
+* geração e envio de minuta/proposta em PDF;
+* armazenamento em Google Drive;
+* alimentação de base de conhecimento;
+* atualização de CRM;
+* melhoria contínua de prompts e agentes.
+
+Esses fluxos não devem ser entendidos como automações isoladas. Eles formam uma jornada comercial completa e auditável, coordenada por agentes especializados e pelo Orchestrator.
+
 Cada workflow deve possuir:
 
 * Identificador único
@@ -15,6 +31,27 @@ Cada workflow deve possuir:
 * Capacidade de pausa
 * Capacidade de retomada
 * Possibilidade de intervenção humana
+
+## Contrato Padrão de Workflow
+
+Todo workflow oficial deve explicitar:
+
+* **Trigger:** evento que inicia o fluxo.
+* **Entradas:** dados mínimos necessários.
+* **Agentes envolvidos:** responsabilidades delegadas.
+* **Integrações:** ferramentas externas e permissões.
+* **Estados:** pending, running, waiting_human, paused, completed, failed, cancelled.
+* **Logs:** passos executados, erros, retries, decisões e aprovações.
+* **Saídas:** resultado persistido e próxima ação.
+* **Pontos de revisão humana:** quando aplicável.
+
+## Princípios
+
+* Workflows devem ser retomáveis, pausáveis e canceláveis.
+* Ações externas sensíveis exigem aprovação humana.
+* Falhas devem registrar causa, tentativa e possibilidade de retry seguro.
+* Dados pessoais devem ser mascarados quando registrados em logs.
+* MCP deve ser a camada preferencial para ferramentas externas.
 
 ---
 

@@ -10,6 +10,14 @@ O Orchestrator não possui conhecimento de negócio específico.
 
 Ele atua como um gerente de equipe digital.
 
+## Origem Conceitual
+
+O conceito do Orchestrator surgiu no chat original quando os fluxos comerciais deixaram de parecer apenas automações isoladas e passaram a se aproximar de uma arquitetura de **AI Workforce / Multi-Agent System**.
+
+A pesquisa do chat apontou tendências como OpenAI Agents SDK, Anthropic MCP, LangChain.js/LangGraph, KaibanJS, Copilot Studio e ferramentas de automação agentiva. A decisão de produto foi absorver essa direção, mas com uma regra central: **autonomia controlada, auditável e supervisionável**.
+
+Assim, o Orchestrator deve ser o centro operacional que transforma intenção em plano, plano em tarefas, tarefas em delegações e resultados parciais em uma resposta consolidada.
+
 ---
 
 # Objetivos
@@ -22,6 +30,18 @@ Ele atua como um gerente de equipe digital.
 * Permitir intervenção humana
 * Consolidar resultados
 * Otimizar custo e consumo de tokens
+
+## Limites do Orchestrator
+
+O Orchestrator:
+
+* não qualifica leads diretamente;
+* não escreve contratos diretamente;
+* não consulta conhecimento diretamente;
+* não executa ações externas sensíveis sem aprovação;
+* não deve concentrar prompts de domínio que pertencem a agentes especializados.
+
+Seu papel é decidir **quem deve agir**, **em qual ordem**, **com qual contexto**, **com quais limites** e **como o resultado será auditado**.
 
 ---
 
@@ -95,6 +115,18 @@ Registrar:
 * Ferramentas utilizadas
 * Tempo de execução
 * Resultado
+
+## Critérios de Boa Orquestração
+
+Uma execução orquestrada é considerada bem-sucedida quando:
+
+* o objetivo do usuário foi convertido em plano explícito;
+* cada tarefa teve agente responsável;
+* contexto compartilhado e contexto privado foram separados;
+* ferramentas MCP usadas ficaram registradas;
+* custos, tokens, tempo e erros foram persistidos;
+* ações críticas foram revisadas por humano;
+* o resultado final explica o que foi feito e o que ficou pendente.
 
 ---
 

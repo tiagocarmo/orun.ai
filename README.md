@@ -4,6 +4,15 @@ Plataforma para criação, configuração e execução de agentes de IA especial
 
 ---
 
+## Origem e Contexto
+
+O Orun.AI nasceu de uma investigação conversacional consolidada nesta documentação base.
+Primeiro, o projeto buscou um nome inspirado em culturas afro-brasileiras e iorubás associado a sabedoria, visão, caminhos e interpretação. A escolha foi **Orun.AI**, conectada ao conceito de Orun/Orunmilá/Ifá como símbolo de conhecimento profundo, leitura de contexto e orientação.
+
+Essa inspiração deve ser usada com respeito: Orun.AI não é um produto religioso, nem deve apropriar ritos, símbolos sagrados ou prometer adivinhação. O significado de marca é metafórico e institucional: **ver além do óbvio, entender contexto e orientar decisões com responsabilidade**.
+
+Depois, a ideia evoluiu de um site institucional de IA para uma plataforma de **AI Workforce**: equipes digitais compostas por agentes especializados, coordenadas por workflows auditáveis e integradas a ferramentas externas por MCP.
+
 ## Visão Geral
 
 - Agent Builder
@@ -12,6 +21,18 @@ Plataforma para criação, configuração e execução de agentes de IA especial
 - Knowledge Builder
 - Multi-Agent Orchestrator
 - Analytics & Observability
+
+## Tese do Produto
+
+O foco inicial é automação comercial: captar leads, qualificar oportunidades, enriquecer contexto, agendar reuniões, fazer follow-up, gerar documentos e manter histórico auditável. O objetivo de longo prazo é permitir que empresas criem e operem times de agentes confiáveis, especializados e supervisionáveis.
+
+Pilares:
+- **Especialização:** cada agente tem uma responsabilidade clara.
+- **Orquestração:** workflows coordenam agentes, humanos e integrações.
+- **Auditabilidade:** ações, decisões, entradas e saídas relevantes ficam registradas.
+- **Human-in-the-loop:** ações sensíveis exigem revisão humana.
+- **MCP-first:** integrações externas devem evoluir por contratos padronizados.
+- **JavaScript/TypeScript-first:** a base técnica prioriza o ecossistema JS/TS.
 
 ## Stack
 
@@ -90,6 +111,10 @@ src/
 ## Documentação
 
 - `AGENTS.md` — especificação completa dos agentes
+- `docs/prd.md` — requisitos de produto e visão evolutiva
+- `docs/workflows.md` — workflows oficiais da jornada comercial e operacional
+- `docs/orchestrator.md` — coordenação entre agentes, contexto, MCP e governança
+- `DESIGN.md` — identidade visual e princípios de experiência
 - `docs/features/` — documentação por feature
 - `docs/codex-report/` — auditoria Codex de requisitos, implementação real e lacunas
 - `.mimocode/learning.md` — aprendizados do projeto
