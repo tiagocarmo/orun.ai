@@ -15,6 +15,17 @@ Sempre carregar e considerar:
 
 ---
 
+## Planejamento Obrigatório
+
+**Toda tarefa de planejamento DEVE usar a skill `tlc-spec-driven`.**
+
+- Carregar a skill antes de qualquer planejamento
+- Avaliar complexidade (Small/Medium/Large/Complex)
+- Seguir as fases: Specify → Design → Tasks → Execute
+- Criar estrutura em `.specs/features/[nome]/`
+
+---
+
 ## Finalização de Toda Tarefa
 
 Ao concluir qualquer tarefa, obrigatoriamente:

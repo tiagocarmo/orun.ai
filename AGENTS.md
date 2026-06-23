@@ -308,6 +308,56 @@ Os seguintes arquivos devem ser carregados em toda sessão do assistente:
 
 ---
 
+## Skill Obligatória: tlc-spec-driven
+
+**Toda tarefa de planejamento DEVE usar a skill `tlc-spec-driven`.**
+
+### Quando usar
+
+| Cenário | Ação |
+|---------|------|
+| Novo projeto | Initialize project → PROJECT.md + ROADMAP.md |
+| Nova feature | Specify → (Design) → (Tasks) → Execute |
+| Bug fix simples | Quick mode (≤3 arquivos) |
+| Refactor | Specify (brief) → Execute |
+| Any planning | Sempre carregar a skill primeiro |
+
+### Como usar
+
+1. **Carregar a skill:** Usar ferramenta `skill` com nome `tlc-spec-driven`
+2. **Avaliar complexidade:** Small (≤3 files) / Medium (<10 tasks) / Large / Complex
+3. **Seguir as fases:** Specify → Design (se necessário) → Tasks (se necessário) → Execute
+4. **Estrutura de arquivos:** Criar em `.specs/features/[nome-da-feature]/`
+
+### Estrutura que a skill cria
+
+```
+.specs/
+├── project/
+│   ├── PROJECT.md      # Visão e objetivos
+│   ├── ROADMAP.md      # Features e milestones
+│   └── STATE.md        # Memória: decisões, bloqueios, lições
+├── features/
+│   └── [feature]/
+│       ├── spec.md     # Requisitos com IDs rastreáveis
+│       ├── design.md   # Arquitetura e componentes (Large/Complex)
+│       └── tasks.md    # Tarefas atômicas com verificação (Large/Complex)
+└── quick/              # Tarefas avulsas (quick mode)
+    └── NNN-slug/
+        └── TASK.md
+```
+
+### Regras da skill
+
+- **Specify e Execute** sempre obrigatórios
+- **Design** pulado quando não há decisões arquiteturais
+- **Tasks** pulado quando ≤3 passos óbvios
+- **Quick mode** para ≤3 arquivos, escopo de uma frase
+- Sub-agentes para execução paralela de tarefas `[P]`
+- Verificação sempre após implementação
+
+---
+
 ## Checklist de Conclusão de Tarefa
 
 Ao finalizar qualquer tarefa, o assistente DEVE:
