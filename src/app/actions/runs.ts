@@ -22,7 +22,7 @@ export async function runAgent(
   try {
     const { runId, result } = await executeAgent(agentSlug, input);
 
-    revalidatePath("/dashboard");
+    revalidatePath("/");
 
     return {
       success: true,

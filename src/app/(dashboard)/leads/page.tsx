@@ -7,11 +7,14 @@ import { Card } from "@/components/ui/card";
 import { LeadStatusBadge } from "@/components/ui/badge";
 import { Table, TableHeader, TableBody, TableRow, TableHead, TableCell } from "@/components/ui/table";
 import { EmptyState } from "@/components/ui/empty-state";
+import { Pagination } from "@/components/ui/pagination";
 import { getLeads } from "@/app/actions/leads";
 import type { LeadWithEvents } from "@/lib/types";
 
 type StatusFilter = "all" | "new" | "qualified" | "nurturing" | "disqualified" | "converted" | "archived";
 type SortField = "name" | "company" | "status" | "qualificationScore" | "createdAt";
+
+const PAGE_SIZE = 20;
 
 export default function LeadsPage() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
@@ -19,18 +22,26 @@ export default function LeadsPage() {
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
   const [leads, setLeads] = useState<LeadWithEvents[]>([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  useEffect(() => {
+    setPage(1);
+  }, [statusFilter]);
 
   useEffect(() => {
     async function load() {
+      setLoading(true);
       const status = statusFilter === "all" ? undefined : statusFilter;
-      const result = await getLeads(1, 100, status);
+      const result = await getLeads(page, PAGE_SIZE, status);
       if (result.success) {
         setLeads(result.data.data);
+        setTotalPages(result.data.totalPages);
       }
       setLoading(false);
     }
     load();
-  }, [statusFilter]);
+  }, [page, statusFilter]);
 
   const sorted = [...leads].sort((a, b) => {
     const aVal = a[sortField] ?? "";
@@ -136,6 +147,10 @@ export default function LeadsPage() {
             </TableBody>
           </Table>
         </Card>
+      )}
+
+      {!loading && leads.length > 0 && (
+        <Pagination page={page} totalPages={totalPages} onPageChange={setPage} />
       )}
     </div>
   );

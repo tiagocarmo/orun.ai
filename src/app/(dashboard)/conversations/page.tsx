@@ -41,7 +41,7 @@ export default async function ConversationsPage() {
       {items.length === 0 ? (
         <EmptyState
           title="Nenhuma conversa encontrada"
-          description="Conversas aparecerao aqui quando os agentes comecarem a interagir com leads."
+          description="Conversas aparecerão aqui quando os agentes começarem a interagir com leads."
         />
       ) : (
         <ConversationList conversations={items} />

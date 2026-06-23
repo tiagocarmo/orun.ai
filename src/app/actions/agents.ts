@@ -51,7 +51,7 @@ export async function createAgent(
     },
   });
 
-  revalidatePath("/dashboard");
+  revalidatePath("/");
 
   return {
     success: true,
@@ -135,7 +135,7 @@ export async function updateAgent(
     });
   }
 
-  revalidatePath("/dashboard");
+  revalidatePath("/");
 
   return { success: true, data: { id: agent.id } };
 }
@@ -150,7 +150,7 @@ export async function deleteAgent(
 
   await db.agent.delete({ where: { slug } });
 
-  revalidatePath("/dashboard");
+  revalidatePath("/");
 
   return { success: true, data: { deleted: true } };
 }

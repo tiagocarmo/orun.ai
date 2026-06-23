@@ -119,7 +119,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         </nav>
 
         <div className="px-6 py-4 border-t border-white/10">
-          <p className="text-xs text-on-dark-soft">Orun.AI v0.1.0</p>
+          <p className="text-xs text-on-dark-soft">Orun.AI v1.0.0</p>
         </div>
       </aside>
     </>

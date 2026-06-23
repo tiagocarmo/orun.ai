@@ -27,7 +27,7 @@ export async function createConversation(
     },
   });
 
-  revalidatePath("/dashboard");
+  revalidatePath("/");
 
   return { success: true, data: { id: conversation.id } };
 }
@@ -98,7 +98,7 @@ export async function addMessage(
     data: { updatedAt: new Date() },
   });
 
-  revalidatePath("/dashboard");
+  revalidatePath("/");
 
   return { success: true, data: { id: message.id } };
 }

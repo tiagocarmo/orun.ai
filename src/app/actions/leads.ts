@@ -60,7 +60,7 @@ export async function createLead(
     },
   });
 
-  revalidatePath("/dashboard");
+  revalidatePath("/");
 
   return { success: true, data: { id: lead.id } };
 }
@@ -159,7 +159,7 @@ export async function updateLead(
     data: updateData,
   });
 
-  revalidatePath("/dashboard");
+  revalidatePath("/");
 
   return { success: true, data: { id: lead.id } };
 }
@@ -197,7 +197,7 @@ export async function deleteLead(
 
   await db.lead.delete({ where: { id } });
 
-  revalidatePath("/dashboard");
+  revalidatePath("/");
 
   return { success: true, data: { deleted: true } };
 }
