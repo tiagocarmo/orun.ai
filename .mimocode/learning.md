@@ -127,3 +127,37 @@ Começar com dados mock no WS-C e substituir por Prisma queries na integração 
 
 - `CLAUDE.md`, `AGENTS.md` e `README.md` devem ser referenciados para autoload
 - Referenciar no `CLAUDE.md` garante que o assistente sempre carregue as regras
+
+---
+
+## Sessão 3 — Correção de Feedback UI com Worktree Paralelo
+
+### Trabalho paralelo com 3 workstreams
+
+- Criado worktree isolado `.worktrees/fix-ui-feedback`
+- 3 agents executando em paralelo: WS-A (foundation), WS-B (leads), WS-C (search/responsive)
+- Cada agent trabalhou em arquivos distintos, sem conflitos
+- Todos os agents concluíram com sucesso
+
+### Desafio: agents trabalharam no repo principal
+
+- O diretorio `src/` era untracked no worktree, entao os agents acabaram trabalhando no repo principal
+- Solução: commit final foi feito no repo principal, worktree foi removido
+- Lição: para worktrees com arquivos untracked, considerar fazer checkout dos arquivos primeiro
+
+### Resultado das correções
+
+- Sidebar fixa em desktop com `h-screen` e `lg:fixed`
+- Todos os textos traduzidos para PT-BR
+- Leads: CRUD completo (editar/arquivar/excluir) com modal de confirmacao
+- Run Agent: busca de leads com autocomplete (3 letras, debounce 3s, max 3 resultados)
+- Conversas: contexto enriquecido com info do lead e agente
+- Layout responsivo para desktop e mobile
+- Componente Modal generico criado
+
+### Verificações passaram
+
+- Typecheck: ✅ sem erros
+- Lint: ✅ sem warnings
+- Build: ✅ sucesso
+- Version: 0.1.1 → 0.2.0 (minor — novas funcionalidades)
