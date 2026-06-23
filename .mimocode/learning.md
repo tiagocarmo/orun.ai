@@ -214,3 +214,25 @@ Começar com dados mock no WS-C e substituir por Prisma queries na integração 
 - Sempre criar backup do bundle antes de patch local
 - Validar sintaxe com `node --check`
 - Registrar que atualização/reinstalação da extensão pode sobrescrever o patch
+
+---
+
+## Sessão 7 — Auditoria Codex do Projeto Orun.AI
+
+### Auditoria precisa comparar promessa, histórico e código
+
+- A documentação do Orun descreve uma plataforma workforce ampla, mas o código atual é um MVP parcial com CRUD, dois agentes, runs, conversas, dashboard e stubs.
+- O histórico `.mimocode` é útil para entender intenção e decisões, mas precisa ser confrontado com a implementação real; há casos em que tarefas foram registradas como concluídas e depois corrigidas parcialmente.
+
+### Achados de alto impacto
+
+- A tela de execução manual seleciona lead, mas não envia `leadId`; isso diverge do contrato do `QualificationAgent`.
+- O botão "Desarquivar" de lead usa a mesma atualização de status de arquivamento.
+- Webhooks executam o lead intake diretamente, sem criar `AgentRun`, reduzindo auditabilidade.
+- O projeto tem Vitest configurado, mas sem testes reais de agentes/actions.
+
+### Relatório produzido
+
+- A auditoria foi gravada em `docs/codex-report/`.
+- A feature documental foi registrada em `docs/features/codex-report.md`.
+- A tarefa foi rastreada em `.specs/features/codex-report-audit/`.

@@ -91,6 +91,7 @@ src/
 
 - `AGENTS.md` — especificação completa dos agentes
 - `docs/features/` — documentação por feature
+- `docs/codex-report/` — auditoria Codex de requisitos, implementação real e lacunas
 - `.mimocode/learning.md` — aprendizados do projeto
 - `.mimocode/session/` — histórico de sessões
 
