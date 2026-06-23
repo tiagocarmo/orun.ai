@@ -1,2 +1,8 @@
-# orun.ai
-Criação da POC Orun.AI usando o Xiaomi Mimo Code
+Orun.AI Workforce Platform
+
+- Agent Builder
+- MCP Server Builder
+- Workflow Builder
+- Knowledge Builder
+- Multi-Agent Orchestrator
+- Analytics & Observability
