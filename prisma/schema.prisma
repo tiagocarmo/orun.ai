@@ -1,0 +1,191 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Agent {
+  id          String         @id @default(cuid())
+  name        String
+  slug        String         @unique
+  description String?
+  prompt      String
+  model       String         @default("gpt-4o")
+  maxTokens   Int            @default(4096)
+  temperature Float          @default(0.7)
+  isActive    Boolean        @default(true)
+  config      String?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  versions    AgentVersion[]
+  runs        AgentRun[]
+}
+
+model AgentVersion {
+  id        String      @id @default(cuid())
+  agentId   String
+  version   Int
+  prompt    String
+  model     String
+  config    String?
+  changelog String?
+  createdAt DateTime    @default(now())
+  agent     Agent       @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  runs      AgentRun[]
+
+  @@unique([agentId, version])
+}
+
+model AgentRun {
+  id              String        @id @default(cuid())
+  agentId         String
+  agentVersionId  String?
+  status          String        @default("pending")
+  input           String
+  output          String?
+  error           String?
+  durationMs      Int?
+  tokensConsumed  Int?
+  model           String?
+  startedAt       DateTime?
+  completedAt     DateTime?
+  createdAt       DateTime      @default(now())
+  agent           Agent         @relation(fields: [agentId], references: [id], onDelete: Cascade)
+  agentVersion    AgentVersion? @relation(fields: [agentVersionId], references: [id])
+  logs            AgentLog[]
+}
+
+model AgentLog {
+  id        String   @id @default(cuid())
+  runId     String
+  level     String   @default("info")
+  message   String
+  metadata  String?
+  createdAt DateTime @default(now())
+  run       AgentRun @relation(fields: [runId], references: [id], onDelete: Cascade)
+}
+
+model Lead {
+  id                    String        @id @default(cuid())
+  name                  String
+  email                 String?
+  phone                 String?
+  company               String?
+  source                String?
+  message               String?
+  status                String        @default("new")
+  qualificationScore    Int?
+  qualificationReason   String?
+  metadata              String?
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+  events                LeadEvent[]
+  conversations         Conversation[]
+}
+
+model LeadEvent {
+  id        String   @id @default(cuid())
+  leadId    String
+  type      String
+  data      String?
+  createdAt DateTime @default(now())
+  lead      Lead     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+}
+
+model Conversation {
+  id          String      @id @default(cuid())
+  leadId      String?
+  title       String?
+  status      String      @default("active")
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  lead        Lead?       @relation(fields: [leadId], references: [id], onDelete: SetNull)
+  messages    Message[]
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  role           String
+  content        String
+  metadata       String?
+  createdAt      DateTime     @default(now())
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+}
+
+model Workflow {
+  id          String        @id @default(cuid())
+  name        String
+  slug        String        @unique
+  description String?
+  steps       String
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  runs        WorkflowRun[]
+}
+
+model WorkflowRun {
+  id          String   @id @default(cuid())
+  workflowId  String
+  status      String   @default("pending")
+  input       String?
+  output      String?
+  error       String?
+  context     String?
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime @default(now())
+  workflow    Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+}
+
+model Document {
+  id          String          @id @default(cuid())
+  name        String
+  type        String
+  content     String
+  templateId  String?
+  leadId      String?
+  fileUrl     String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  chunks      DocumentChunk[]
+}
+
+model DocumentChunk {
+  id         String   @id @default(cuid())
+  documentId String
+  content    String
+  embedding  String?
+  metadata   String?
+  createdAt  DateTime @default(now())
+  document   Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+}
+
+model Integration {
+  id          String   @id @default(cuid())
+  name        String
+  type        String
+  provider    String?
+  config      String?
+  credentials String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model ScheduledTask {
+  id          String    @id @default(cuid())
+  name        String
+  type        String
+  leadId      String?
+  agentId     String?
+  config      String?
+  scheduledAt DateTime
+  status      String    @default("pending")
+  executedAt  DateTime?
+  createdAt   DateTime  @default(now())
+}
