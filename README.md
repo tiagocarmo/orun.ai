@@ -31,6 +31,7 @@ Depois, a ideia evoluiu de um site institucional de IA para uma plataforma de **
 - Workflow Engine funcional com execucao sequencial, pausa, retomada e cancelamento.
 - Orchestrator core com planejamento, delegacao e consolidacao de resultados.
 - MCP tools executaveis com calendar e document stubs, retry e audit logs.
+- Equipe digital comercial completa: scheduling, follow-up, research, document, human-handoff.
 
 ## Tese do Produto
 

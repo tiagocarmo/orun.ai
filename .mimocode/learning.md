@@ -476,3 +476,38 @@ Começar com dados mock no WS-C e substituir por Prisma queries na integração 
 - `BaseMCPTool`提供 helpers para criar resultados de sucesso/erro
 - Tools concretas apenas implementam `definition()` e `execute()`
 - Padrão consistente facilita manutenção
+
+---
+
+## Sessão 15 — Commercial Agents Point 07
+
+### Agentes comerciais seguem padrão existente
+
+- Todos os novos agentes estendem `AbstractAgent` e implementam `definition()`, `validate()`, `execute()`
+- Validação com Zod mantém consistência
+- Padrão identical ao LeadIntakeAgent e QualificationAgent
+
+### Contratos de entrada/saída são documentados
+
+- Cada agente define explicitamente input schema e output esperado
+- Isso facilita integração com workflows e orchestrator
+- Documentação da feature lista todos os contratos
+
+### Limites de negócio são implementados no agente
+
+- FollowUpAgent tem limite de 5 tentativas
+- HumanHandoffAgent tem thresholds de prioridade
+- Essas regras ficam encapsuladas no agente, não no workflow
+
+### Mock db precisa ser expandido para novos modelos
+
+- `document` e `leadEvent.findMany` foram adicionados ao mock
+- Cada novo modelo que os agentes usam precisa de mock
+- Padrão: verificar erros de teste primeiro, depois expandir mock
+
+### Stubs para external APIs são aceitáveis no MVP
+
+- ResearchAgent usa lógica local para enriquecimento
+- DocumentAgent gera templates localmente
+- CalendarAgent pode usar MCP tools ou lógica local
+- Esses stubs podem ser substituídos por implementações reais depois

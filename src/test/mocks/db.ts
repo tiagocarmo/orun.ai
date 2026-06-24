@@ -16,6 +16,7 @@ export const mockDb = {
   },
   leadEvent: {
     create: createMockFn(),
+    findMany: createMockFn(),
   },
   agent: {
     findUnique: createMockFn(),
@@ -50,6 +51,13 @@ export const mockDb = {
     findMany: createMockFn(),
     create: createMockFn(),
     update: createMockFn(),
+  },
+  document: {
+    create: createMockFn(),
+    findUnique: createMockFn(),
+    findMany: createMockFn(),
+    update: createMockFn(),
+    delete: createMockFn(),
   },
 };
 
