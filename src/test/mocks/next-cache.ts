@@ -1,0 +1,7 @@
+import { vi } from "vitest";
+
+export const revalidatePath = vi.fn();
+
+export function resetNextCacheMocks() {
+  revalidatePath.mockReset();
+}

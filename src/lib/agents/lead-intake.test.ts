@@ -1,29 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { mockDb } = vi.hoisted(() => ({
-  mockDb: {
-    lead: {
-      findFirst: vi.fn(),
-      findMany: vi.fn(),
-      create: vi.fn(),
-    },
-    leadEvent: {
-      create: vi.fn(),
-    },
-  },
-}));
-
-vi.mock("@/lib/db", () => ({
-  db: mockDb,
-}));
+vi.mock("@/lib/db", async () => {
+  const { mockDb } = await import("../../test/mocks/db");
+  return { db: mockDb };
+});
 
 import { LeadIntakeAgent } from "./lead-intake";
+import { mockDb, resetDbMocks } from "../../test/mocks/db";
 
 describe("LeadIntakeAgent", () => {
   const agent = new LeadIntakeAgent();
 
   beforeEach(() => {
-    vi.clearAllMocks();
+    resetDbMocks();
   });
 
   it("deduplicates by externalId even when metadata contains extra fields", async () => {
@@ -71,6 +60,7 @@ describe("LeadIntakeAgent", () => {
   });
 
   it("records a created event with run correlation for new leads", async () => {
+    mockDb.lead.findFirst.mockResolvedValue(null);
     mockDb.lead.findMany.mockResolvedValue([]);
     mockDb.lead.create.mockResolvedValue({ id: "lead-new" });
 
@@ -123,6 +113,45 @@ describe("LeadIntakeAgent", () => {
         duplicated: false,
         nextAction: "qualification",
         message: "Lead created successfully",
+      },
+    });
+  });
+
+  it("deduplicates by email before creating a new lead", async () => {
+    mockDb.lead.findFirst.mockResolvedValueOnce({ id: "lead-email" });
+
+    const result = await agent.execute(
+      {
+        name: "Lead Existente",
+        email: "existente@example.com",
+      },
+      {
+        agentId: "agent-1",
+        runId: "run-3",
+        model: "gpt-4o",
+        temperature: 0.2,
+        maxTokens: 500,
+      }
+    );
+
+    expect(mockDb.lead.create).not.toHaveBeenCalled();
+    expect(mockDb.leadEvent.create).toHaveBeenCalledWith({
+      data: {
+        leadId: "lead-email",
+        type: "intake_duplicate_detected",
+        data: JSON.stringify({
+          identifier: "email",
+          value: "existente@example.com",
+          runId: "run-3",
+        }),
+      },
+    });
+    expect(result).toEqual({
+      status: "completed",
+      output: {
+        leadId: "lead-email",
+        duplicated: true,
+        message: "Lead already exists with this email",
       },
     });
   });

@@ -67,9 +67,20 @@ npm run dev
 # Rodar testes
 npm test
 
+# Lint e typecheck
+npm run lint
+npm run typecheck
+
 # Build de produção
 npm run build
 ```
+
+## Qualidade
+
+- Testes automatizados usam `Vitest`.
+- Mocks reutilizaveis de banco e runtime de agentes ficam em `src/test/mocks/`.
+- `npm run lint` usa `eslint .` com exclusao de artefatos gerados.
+- `npm run typecheck` executa `next typegen` antes do `tsc --noEmit` para evitar falhas em workspace limpo.
 
 ## Convenções
 
@@ -125,6 +136,7 @@ src/
 - `docs/plans/sequential-build/` — plano canônico de construção sequencial, com um `.md` por ponto
 - `docs/features/` — documentação por feature
 - `docs/features/stabilize-mvp.md` — estabilização do primeiro ponto do plano sequencial
+- `docs/features/tests-and-quality.md` — primeira camada real de testes e revisão dos gates de qualidade
 - `docs/codex-report/` — auditoria Codex de requisitos, implementação real e lacunas
 - `.mimocode/learning.md` — aprendizados do projeto
 - `.mimocode/session/` — histórico de sessões

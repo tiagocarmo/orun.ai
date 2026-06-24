@@ -259,6 +259,28 @@ Começar com dados mock no WS-C e substituir por Prisma queries na integração 
 - A feature documental foi registrada em `docs/features/codex-report.md`.
 - A tarefa foi rastreada em `.specs/features/codex-report-audit/`.
 
+## Sessão 9 — Tests and Quality Point 02
+
+### Helpers de mock reduzem atrito e duplicação
+
+- Centralizar mocks em `src/test/mocks/` tornou os testes de actions, agentes e webhook consistentes e mais fáceis de expandir
+- Esse padrão evita recriar `mockDb`, `revalidatePath` e runtime de agentes em cada arquivo novo
+
+### Cobertura mínima útil é melhor que cobertura difusa
+
+- Priorizar `LeadIntakeAgent`, `QualificationAgent`, `runAgent`, webhook e actions de leads deu proteção real aos fluxos centrais do MVP
+- Esse recorte conversa diretamente com a auditoria e reduz risco de regressão onde o produto já opera
+
+### Revisão de tooling cabe junto do ponto de qualidade
+
+- Migrar `lint` para `eslint .` removeu o caminho depreciado de `next lint`
+- Rodar `next typegen` antes do `tsc --noEmit` melhorou a previsibilidade do gate de tipos, mas a execução continua mais confiável quando feita em sequência após `build`
+
+### Testes de contrato ajudam a estabilizar server actions
+
+- Para `runAgent` e webhook, validar o formato de retorno e os cenários de erro foi tão importante quanto validar o caminho feliz
+- Em MVPs com pouca integração real, esses testes de contrato capturam boa parte dos regressos sem exigir banco real
+
 ---
 
 ## Sessão 8 — Alinhamento dos Documentos Base ao Chat Original

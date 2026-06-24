@@ -1,31 +1,72 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-const { mockDb, revalidatePath } = vi.hoisted(() => ({
-  mockDb: {
-    lead: {
-      findUnique: vi.fn(),
-      update: vi.fn(),
-    },
-    leadEvent: {
-      create: vi.fn(),
-    },
-  },
-  revalidatePath: vi.fn(),
-}));
+vi.mock("@/lib/db", async () => {
+  const { mockDb } = await import("../../test/mocks/db");
+  return { db: mockDb };
+});
 
-vi.mock("@/lib/db", () => ({
-  db: mockDb,
-}));
+vi.mock("next/cache", async () => {
+  const { revalidatePath } = await import("../../test/mocks/next-cache");
+  return { revalidatePath };
+});
 
-vi.mock("next/cache", () => ({
-  revalidatePath,
-}));
+import { createLead, deleteLead, searchLeads, updateLead } from "./leads";
+import { mockDb, resetDbMocks } from "../../test/mocks/db";
+import { revalidatePath, resetNextCacheMocks } from "../../test/mocks/next-cache";
 
-import { updateLead } from "./leads";
-
-describe("updateLead", () => {
+describe("lead actions", () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    resetDbMocks();
+    resetNextCacheMocks();
+  });
+
+  it("creates a lead, persists metadata and emits the created event", async () => {
+    mockDb.lead.findFirst.mockResolvedValue(null);
+    mockDb.lead.create.mockResolvedValue({ id: "lead-create" });
+
+    const result = await createLead({
+      name: "Lead Novo",
+      email: "novo@example.com",
+      source: "site",
+      metadata: { campaign: "launch" },
+    });
+
+    expect(mockDb.lead.create).toHaveBeenCalledWith({
+      data: {
+        name: "Lead Novo",
+        email: "novo@example.com",
+        phone: null,
+        company: null,
+        source: "site",
+        message: null,
+        status: "new",
+        metadata: JSON.stringify({ campaign: "launch" }),
+      },
+    });
+    expect(mockDb.leadEvent.create).toHaveBeenCalledWith({
+      data: {
+        leadId: "lead-create",
+        type: "created",
+        data: JSON.stringify({ source: "site" }),
+      },
+    });
+    expect(revalidatePath).toHaveBeenCalledWith("/");
+    expect(result).toEqual({ success: true, data: { id: "lead-create" } });
+  });
+
+  it("blocks duplicate emails during lead creation", async () => {
+    mockDb.lead.findFirst.mockResolvedValueOnce({ id: "lead-existing" });
+
+    const result = await createLead({
+      name: "Duplicado",
+      email: "duplicado@example.com",
+    });
+
+    expect(mockDb.lead.create).not.toHaveBeenCalled();
+    expect(result).toEqual({
+      success: false,
+      error: "A lead with this email already exists",
+    });
   });
 
   it("stores the last active status when archiving a lead", async () => {
@@ -81,5 +122,28 @@ describe("updateLead", () => {
       },
     });
     expect(result).toEqual({ success: true, data: { id: "lead-2" } });
+  });
+
+  it("short-circuits search when the query is too short", async () => {
+    const result = await searchLeads("ab");
+
+    expect(mockDb.lead.findMany).not.toHaveBeenCalled();
+    expect(result).toEqual({ success: true, data: [] });
+  });
+
+  it("deletes an existing lead and revalidates the dashboard", async () => {
+    mockDb.lead.findUnique.mockResolvedValue({ id: "lead-delete" });
+    mockDb.lead.delete.mockResolvedValue({ id: "lead-delete" });
+
+    const result = await deleteLead("lead-delete");
+
+    expect(mockDb.lead.delete).toHaveBeenCalledWith({
+      where: { id: "lead-delete" },
+    });
+    expect(revalidatePath).toHaveBeenCalledWith("/");
+    expect(result).toEqual({
+      success: true,
+      data: { deleted: true },
+    });
   });
 });
