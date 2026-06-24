@@ -41,7 +41,7 @@ export function LeadActions({ leadId, currentStatus, currentMetadata }: LeadActi
     setLoading(true);
     const result = await deleteLead(leadId);
     if (result.success) {
-      toast.success("Lead excluído");
+      toast.success("Lead removido");
       setDeleteModalOpen(false);
       router.push("/leads");
     } else {
@@ -92,8 +92,8 @@ export function LeadActions({ leadId, currentStatus, currentMetadata }: LeadActi
         variant="destructive"
       >
         <p>
-          Tem certeza que deseja excluir este lead? Esta ação não pode ser
-          desfeita.
+          Tem certeza que deseja remover este lead da visão ativa? O histórico
+          será preservado para auditoria.
         </p>
       </Modal>
     </>

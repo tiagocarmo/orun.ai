@@ -44,7 +44,7 @@ export async function createIntegration(data: {
   type: string;
   provider?: string;
   config?: Record<string, unknown>;
-  credentials?: string;
+  secretRef?: string;
 }) {
   return db.integration.create({
     data: {
@@ -52,7 +52,7 @@ export async function createIntegration(data: {
       type: data.type,
       provider: data.provider ?? null,
       config: data.config ? JSON.stringify(data.config) : null,
-      credentials: data.credentials ?? null,
+      secretRef: data.secretRef ?? null,
       isActive: true,
     },
   });

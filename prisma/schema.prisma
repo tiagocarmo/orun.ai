@@ -75,15 +75,20 @@ model Lead {
   phone                 String?
   company               String?
   source                String?
+  externalId            String?       @unique
   message               String?
   status                String        @default("new")
   qualificationScore    Int?
   qualificationReason   String?
   metadata              String?
+  deletedAt             DateTime?
   createdAt             DateTime      @default(now())
   updatedAt             DateTime      @updatedAt
   events                LeadEvent[]
   conversations         Conversation[]
+
+  @@index([status, deletedAt])
+  @@index([deletedAt])
 }
 
 model LeadEvent {
@@ -171,7 +176,7 @@ model Integration {
   type        String
   provider    String?
   config      String?
-  credentials String?
+  secretRef   String?
   isActive    Boolean  @default(true)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

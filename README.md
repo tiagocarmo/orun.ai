@@ -57,8 +57,10 @@ Pilares:
 # Instalar dependências
 npm install
 
-# Configurar banco
-npx prisma db push
+# Aplicar migrations locais
+npm run db:migrate
+
+# Popular dados de exemplo
 npx prisma db seed
 
 # Iniciar desenvolvimento
@@ -74,6 +76,13 @@ npm run typecheck
 # Build de produção
 npm run build
 ```
+
+## Persistencia do MVP
+
+- Leads agora usam `externalId` em coluna dedicada para deduplicacao auditavel.
+- Exclusao de lead e soft delete com `deletedAt`; o historico continua preservado.
+- Credenciais de integracoes nao devem ir para o banco: use `secretRef` apontando para `env:` ou outro secret manager.
+- Campos JSON polimorficos continuam serializados em `String` no SQLite por limitacao do Prisma com esse provider; a estrategia de migracao para PostgreSQL esta documentada em `docs/features/data-and-persistence.md`.
 
 ## Qualidade
 
@@ -137,6 +146,7 @@ src/
 - `docs/features/` — documentação por feature
 - `docs/features/stabilize-mvp.md` — estabilização do primeiro ponto do plano sequencial
 - `docs/features/tests-and-quality.md` — primeira camada real de testes e revisão dos gates de qualidade
+- `docs/features/data-and-persistence.md` — endurecimento de schema, migrations e politicas de persistencia do MVP
 - `docs/codex-report/` — auditoria Codex de requisitos, implementação real e lacunas
 - `.mimocode/learning.md` — aprendizados do projeto
 - `.mimocode/session/` — histórico de sessões

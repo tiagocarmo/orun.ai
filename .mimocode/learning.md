@@ -219,6 +219,25 @@ Começar com dados mock no WS-C e substituir por Prisma queries na integração 
 
 ## Sessão 7 — Auditoria Codex do Projeto Orun.AI
 
+## Sessão 10 — Data and Persistence Point 03
+
+### Prisma migrate pode falhar mesmo com schema valido
+
+- Nesta base, `npx prisma validate` e `npx prisma generate` passaram, mas `prisma migrate dev` e `prisma migrate deploy` falharam no engine com a mensagem opaca `Schema engine error:`
+- Como fallback seguro para baseline inicial, `prisma migrate diff --from-empty --to-schema-datamodel ... --script` gerou um `migration.sql` consistente
+- O SQL da migration foi validado com `prisma db execute` sobre um SQLite temporario e o seed executou com sucesso em seguida
+- Licao: para bootstrap de migrations em ambientes com engine instavel, separar "geracao formal da migration" de "aplicacao pelo migrate engine" evita bloquear o trabalho de schema
+
+### Soft delete precisa andar junto com filtros operacionais
+
+- Trocar `delete` por `deletedAt` sem revisar `get`, `list` e `search` deixa dado "apagado" vazando no produto
+- O ajuste correto envolveu `deleteLead`, `getLead`, `getLeads` e `searchLeads`, mantendo o historico no banco e escondendo registros removidos do fluxo principal
+
+### Identificadores externos nao devem morar em metadata consultavel
+
+- `externalId` em JSON serializado funciona como gambiarra de MVP, mas quebra deduplicacao e torna indices impossiveis
+- Promover o identificador para coluna dedicada resolveu a consulta critica sem exigir migracao ampla de todos os blobs JSON do schema
+
 ## Sessão 8 — Stabilize MVP Point 01
 
 ### Prefill por query reduz erro de payload na execucao manual

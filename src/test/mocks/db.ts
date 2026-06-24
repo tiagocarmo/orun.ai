@@ -33,6 +33,12 @@ export const mockDb = {
   agentLog: {
     create: createMockFn(),
   },
+  integration: {
+    findMany: createMockFn(),
+    create: createMockFn(),
+    update: createMockFn(),
+    delete: createMockFn(),
+  },
 };
 
 export function resetDbMocks() {

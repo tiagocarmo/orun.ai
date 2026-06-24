@@ -38,6 +38,7 @@ describe("lead actions", () => {
         phone: null,
         company: null,
         source: "site",
+        externalId: null,
         message: null,
         status: "new",
         metadata: JSON.stringify({ campaign: "launch" }),
@@ -47,7 +48,7 @@ describe("lead actions", () => {
       data: {
         leadId: "lead-create",
         type: "created",
-        data: JSON.stringify({ source: "site" }),
+        data: JSON.stringify({ source: "site", externalId: null }),
       },
     });
     expect(revalidatePath).toHaveBeenCalledWith("/");
@@ -69,8 +70,34 @@ describe("lead actions", () => {
     });
   });
 
+  it("stores externalId in its own column and strips it from metadata", async () => {
+    mockDb.lead.findFirst.mockResolvedValue(null);
+    mockDb.lead.create.mockResolvedValue({ id: "lead-external" });
+
+    const result = await createLead({
+      name: "Lead Externo",
+      externalId: "crm-123",
+      metadata: { externalId: "legacy-123", campaign: "launch" },
+    });
+
+    expect(mockDb.lead.create).toHaveBeenCalledWith({
+      data: {
+        name: "Lead Externo",
+        email: null,
+        phone: null,
+        company: null,
+        source: null,
+        externalId: "crm-123",
+        message: null,
+        status: "new",
+        metadata: JSON.stringify({ campaign: "launch" }),
+      },
+    });
+    expect(result).toEqual({ success: true, data: { id: "lead-external" } });
+  });
+
   it("stores the last active status when archiving a lead", async () => {
-    mockDb.lead.findUnique.mockResolvedValue({
+    mockDb.lead.findFirst.mockResolvedValue({
       id: "lead-1",
       status: "qualified",
       metadata: JSON.stringify({ source: "site" }),
@@ -98,7 +125,7 @@ describe("lead actions", () => {
   });
 
   it("clears the stored active status when unarchiving a lead", async () => {
-    mockDb.lead.findUnique.mockResolvedValue({
+    mockDb.lead.findFirst.mockResolvedValue({
       id: "lead-2",
       status: "archived",
       metadata: JSON.stringify({ source: "site", lastActiveStatus: "nurturing" }),
@@ -132,13 +159,21 @@ describe("lead actions", () => {
   });
 
   it("deletes an existing lead and revalidates the dashboard", async () => {
-    mockDb.lead.findUnique.mockResolvedValue({ id: "lead-delete" });
-    mockDb.lead.delete.mockResolvedValue({ id: "lead-delete" });
+    mockDb.lead.findFirst.mockResolvedValue({ id: "lead-delete", status: "qualified" });
+    mockDb.lead.update.mockResolvedValue({ id: "lead-delete" });
 
     const result = await deleteLead("lead-delete");
 
-    expect(mockDb.lead.delete).toHaveBeenCalledWith({
+    expect(mockDb.lead.update).toHaveBeenCalledWith({
       where: { id: "lead-delete" },
+      data: { deletedAt: expect.any(Date) },
+    });
+    expect(mockDb.leadEvent.create).toHaveBeenCalledWith({
+      data: {
+        leadId: "lead-delete",
+        type: "deleted",
+        data: JSON.stringify({ status: "qualified" }),
+      },
     });
     expect(revalidatePath).toHaveBeenCalledWith("/");
     expect(result).toEqual({

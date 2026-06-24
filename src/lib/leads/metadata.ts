@@ -9,6 +9,7 @@ export const LEAD_ACTIVE_STATUSES = [
 export type LeadActiveStatus = (typeof LEAD_ACTIVE_STATUSES)[number];
 export type LeadStatus = LeadActiveStatus | "archived";
 export type LeadMetadata = Record<string, unknown>;
+const MANAGED_METADATA_KEYS = new Set(["externalId"]);
 
 const ACTIVE_STATUS_SET = new Set<string>(LEAD_ACTIVE_STATUSES);
 
@@ -35,6 +36,35 @@ export function stringifyLeadMetadata(metadata: LeadMetadata | null | undefined)
   }
 
   return JSON.stringify(metadata);
+}
+
+export function stripManagedLeadMetadata(metadata: LeadMetadata | null | undefined): LeadMetadata {
+  if (!metadata) {
+    return {};
+  }
+
+  const nextMetadata = { ...metadata };
+  for (const key of MANAGED_METADATA_KEYS) {
+    delete nextMetadata[key];
+  }
+
+  return nextMetadata;
+}
+
+export function resolveLeadExternalId(
+  externalId: unknown,
+  metadata: LeadMetadata | null | undefined
+): string | null {
+  if (typeof externalId === "string" && externalId.trim().length > 0) {
+    return externalId.trim();
+  }
+
+  const metadataExternalId = metadata?.externalId;
+  if (typeof metadataExternalId === "string" && metadataExternalId.trim().length > 0) {
+    return metadataExternalId.trim();
+  }
+
+  return null;
 }
 
 export function restoreLeadStatus(metadata: LeadMetadata): LeadActiveStatus {

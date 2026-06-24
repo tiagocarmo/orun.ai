@@ -23,6 +23,7 @@ export const createLeadSchema = z.object({
   phone: z.string().max(50).optional().or(z.literal("")),
   company: z.string().max(200).optional().or(z.literal("")),
   source: z.string().max(100).optional().or(z.literal("")),
+  externalId: z.string().max(191).optional().or(z.literal("")),
   message: z.string().max(5000).optional().or(z.literal("")),
   metadata: z.record(z.unknown()).optional(),
 });
@@ -82,7 +83,7 @@ export const webhookLeadSchema = z.object({
   company: z.string().optional(),
   source: z.string().optional(),
   message: z.string().optional(),
-  externalId: z.string().optional(),
+  externalId: z.string().min(1).max(191).optional(),
   metadata: z.record(z.unknown()).optional(),
 });
 

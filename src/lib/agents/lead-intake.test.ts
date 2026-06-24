@@ -16,6 +16,7 @@ describe("LeadIntakeAgent", () => {
   });
 
   it("deduplicates by externalId even when metadata contains extra fields", async () => {
+    mockDb.lead.findFirst.mockResolvedValue(null);
     mockDb.lead.findMany.mockResolvedValue([
       {
         id: "lead-existing",
@@ -88,9 +89,10 @@ describe("LeadIntakeAgent", () => {
         phone: null,
         company: null,
         source: "landing-page",
+        externalId: "ext-2",
         message: null,
         status: "new",
-        metadata: JSON.stringify({ externalId: "ext-2", channel: "meta" }),
+        metadata: JSON.stringify({ channel: "meta" }),
       },
     });
     expect(mockDb.leadEvent.create).toHaveBeenCalledWith({
@@ -113,6 +115,37 @@ describe("LeadIntakeAgent", () => {
         duplicated: false,
         nextAction: "qualification",
         message: "Lead created successfully",
+      },
+    });
+  });
+
+  it("prefers the dedicated externalId column when deduplicating", async () => {
+    mockDb.lead.findFirst
+      .mockResolvedValueOnce(null)
+      .mockResolvedValueOnce({ id: "lead-column" });
+
+    const result = await agent.execute(
+      {
+        name: "Lead Coluna",
+        email: "coluna@example.com",
+        externalId: "ext-column",
+      },
+      {
+        agentId: "agent-1",
+        runId: "run-4",
+        model: "gpt-4o",
+        temperature: 0.2,
+        maxTokens: 500,
+      }
+    );
+
+    expect(mockDb.lead.findMany).not.toHaveBeenCalled();
+    expect(result).toEqual({
+      status: "completed",
+      output: {
+        leadId: "lead-column",
+        duplicated: true,
+        message: "Lead already exists with this external ID",
       },
     });
   });

@@ -4,6 +4,8 @@ import { db } from "@/lib/db";
 import {
   LeadActiveStatus,
   parseLeadMetadata,
+  resolveLeadExternalId,
+  stripManagedLeadMetadata,
   stringifyLeadMetadata,
   withLastActiveStatus,
   withoutLastActiveStatus,
@@ -25,6 +27,8 @@ export async function createLead(
   }
 
   const data = validation.data;
+  const externalId = resolveLeadExternalId(data.externalId, data.metadata);
+  const metadata = stripManagedLeadMetadata(data.metadata);
 
   if (data.email) {
     const existing = await db.lead.findFirst({ where: { email: data.email } });
@@ -46,6 +50,16 @@ export async function createLead(
     }
   }
 
+  if (externalId) {
+    const existing = await db.lead.findFirst({ where: { externalId } });
+    if (existing) {
+      return {
+        success: false,
+        error: "A lead with this external ID already exists",
+      };
+    }
+  }
+
   const lead = await db.lead.create({
     data: {
       name: data.name,
@@ -53,9 +67,10 @@ export async function createLead(
       phone: data.phone ?? null,
       company: data.company ?? null,
       source: data.source ?? null,
+      externalId,
       message: data.message ?? null,
       status: "new",
-      metadata: stringifyLeadMetadata(data.metadata),
+      metadata: stringifyLeadMetadata(metadata),
     },
   });
 
@@ -63,7 +78,7 @@ export async function createLead(
     data: {
       leadId: lead.id,
       type: "created",
-      data: JSON.stringify({ source: data.source }),
+      data: JSON.stringify({ source: data.source, externalId }),
     },
   });
 
@@ -77,7 +92,10 @@ export async function getLeads(
   pageSize = 20,
   status?: string
 ): Promise<ApiResponse<PaginatedResponse<LeadWithEvents>>> {
-  const where = status ? { status } : {};
+  const where = {
+    deletedAt: null,
+    ...(status ? { status } : {}),
+  };
 
   const [total, leads] = await Promise.all([
     db.lead.count({ where }),
@@ -107,8 +125,8 @@ export async function getLeads(
 export async function getLead(
   id: string
 ): Promise<ApiResponse<LeadWithEvents>> {
-  const lead = await db.lead.findUnique({
-    where: { id },
+  const lead = await db.lead.findFirst({
+    where: { id, deletedAt: null },
     include: { events: { orderBy: { createdAt: "desc" } } },
   });
 
@@ -132,17 +150,20 @@ export async function updateLead(
     };
   }
 
-  const existing = await db.lead.findUnique({ where: { id } });
+  const existing = await db.lead.findFirst({ where: { id, deletedAt: null } });
   if (!existing) {
     return { success: false, error: `Lead '${id}' not found` };
   }
 
   const data = validation.data;
   const updateData: Record<string, unknown> = {};
-  const existingMetadata = parseLeadMetadata(existing.metadata);
-  let nextMetadata = data.metadata !== undefined ? data.metadata : existingMetadata;
+  const existingMetadata = stripManagedLeadMetadata(parseLeadMetadata(existing.metadata));
+  let nextMetadata = data.metadata !== undefined
+    ? stripManagedLeadMetadata(data.metadata)
+    : existingMetadata;
   let nextEventType: string | null = null;
   let nextEventData: Record<string, unknown> | null = null;
+  const externalId = resolveLeadExternalId(data.externalId, data.metadata);
 
   if (data.name !== undefined) updateData.name = data.name;
   if (data.email !== undefined) updateData.email = data.email;
@@ -153,6 +174,26 @@ export async function updateLead(
   if (data.status !== undefined) updateData.status = data.status;
   if (data.qualificationScore !== undefined) updateData.qualificationScore = data.qualificationScore;
   if (data.qualificationReason !== undefined) updateData.qualificationReason = data.qualificationReason;
+
+  if (data.externalId !== undefined) {
+    const duplicate = externalId
+      ? await db.lead.findFirst({
+        where: {
+          externalId,
+          NOT: { id },
+        },
+      })
+      : null;
+
+    if (duplicate) {
+      return {
+        success: false,
+        error: "A lead with this external ID already exists",
+      };
+    }
+
+    updateData.externalId = externalId;
+  }
 
   if (data.status && data.status !== existing.status) {
     if (data.status === "archived" && existing.status !== "archived") {
@@ -202,6 +243,7 @@ export async function searchLeads(
 
   const leads = await db.lead.findMany({
     where: {
+      deletedAt: null,
       OR: [
         { name: { contains: query } },
         { email: { contains: query } },
@@ -219,12 +261,23 @@ export async function searchLeads(
 export async function deleteLead(
   id: string
 ): Promise<ApiResponse<{ deleted: boolean }>> {
-  const existing = await db.lead.findUnique({ where: { id } });
+  const existing = await db.lead.findFirst({ where: { id, deletedAt: null } });
   if (!existing) {
     return { success: false, error: `Lead '${id}' not found` };
   }
 
-  await db.lead.delete({ where: { id } });
+  await db.lead.update({
+    where: { id },
+    data: { deletedAt: new Date() },
+  });
+
+  await db.leadEvent.create({
+    data: {
+      leadId: id,
+      type: "deleted",
+      data: JSON.stringify({ status: existing.status }),
+    },
+  });
 
   revalidatePath("/");
 

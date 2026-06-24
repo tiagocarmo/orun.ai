@@ -2,7 +2,12 @@ import { db } from "@/lib/db";
 import { AbstractAgent } from "./base";
 import { AgentDefinition, AgentContext, AgentExecuteResult } from "./types";
 import { webhookLeadSchema } from "@/lib/validators";
-import { parseLeadMetadata, stringifyLeadMetadata } from "@/lib/leads/metadata";
+import {
+  parseLeadMetadata,
+  resolveLeadExternalId,
+  stripManagedLeadMetadata,
+  stringifyLeadMetadata,
+} from "@/lib/leads/metadata";
 
 export class LeadIntakeAgent extends AbstractAgent {
   definition(): AgentDefinition {
@@ -37,6 +42,8 @@ export class LeadIntakeAgent extends AbstractAgent {
     }
 
     const parsed = webhookLeadSchema.parse(input);
+    const externalId = resolveLeadExternalId(parsed.externalId, parsed.metadata);
+    const metadata = stripManagedLeadMetadata(parsed.metadata);
 
     // Deduplication
     if (parsed.email) {
@@ -89,15 +96,26 @@ export class LeadIntakeAgent extends AbstractAgent {
       }
     }
 
-    if (parsed.externalId) {
-      const candidates = await db.lead.findMany({
-        where: { metadata: { not: null } },
-        select: { id: true, metadata: true },
+    if (externalId) {
+      const existingByColumn = await db.lead.findFirst({
+        where: { externalId },
       });
-      const existing = candidates.find((candidate) => {
-        const metadata = parseLeadMetadata(candidate.metadata);
-        return metadata.externalId === parsed.externalId;
-      });
+
+      const existing = existingByColumn ?? await (async () => {
+        const candidates = await db.lead.findMany({
+          where: {
+            externalId: null,
+            metadata: { not: null },
+          },
+          select: { id: true, metadata: true },
+        });
+
+        return candidates.find((candidate) => {
+          const candidateMetadata = parseLeadMetadata(candidate.metadata);
+          return candidateMetadata.externalId === externalId;
+        });
+      })();
+
       if (existing) {
         await db.leadEvent.create({
           data: {
@@ -105,7 +123,7 @@ export class LeadIntakeAgent extends AbstractAgent {
             type: "intake_duplicate_detected",
             data: JSON.stringify({
               identifier: "externalId",
-              value: parsed.externalId,
+              value: externalId,
               runId: context.runId,
             }),
           },
@@ -128,16 +146,10 @@ export class LeadIntakeAgent extends AbstractAgent {
         phone: parsed.phone ?? null,
         company: parsed.company ?? null,
         source: parsed.source ?? null,
+        externalId,
         message: parsed.message ?? null,
         status: "new",
-        metadata: stringifyLeadMetadata(
-          parsed.externalId
-            ? {
-              externalId: parsed.externalId,
-              ...(((parsed.metadata as Record<string, unknown> | undefined) ?? {})),
-            }
-            : parsed.metadata
-        ),
+        metadata: stringifyLeadMetadata(metadata),
       },
     });
 
@@ -147,8 +159,8 @@ export class LeadIntakeAgent extends AbstractAgent {
         type: "created",
         data: JSON.stringify({
           source: parsed.source,
-          externalId: parsed.externalId,
-          metadata: parsed.metadata ?? null,
+          externalId,
+          metadata: Object.keys(metadata).length > 0 ? metadata : null,
           runId: context.runId,
           agent: this.getSlug(),
         }),
