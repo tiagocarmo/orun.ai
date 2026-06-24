@@ -407,3 +407,37 @@ Começar com dados mock no WS-C e substituir por Prisma queries na integração 
 
 - O campo `steps` do `Workflow` é JSON serializado — documentar o formato esperado é essencial
 - Incluir exemplos de variáveis de contexto e condições ajuda na adoção
+
+---
+
+## Sessão 13 — Orchestrator Core Point 05
+
+### Orchestrator deve ser coordenador, não executor
+
+- A regra central é: Orchestrator NUNCA executa tarefas de domínio diretamente
+- Ele apenas planeja, delega para agentes e consolida resultados
+- Isso mantém separação de responsabilidades e facilita testes
+
+### Planejamento baseado em regras funciona para MVP
+
+- Usar keywords no objetivo para mapear agentes (ex: "qualific" → qualification agent)
+- É simples, previsível e testável
+- Planejamento com LLM pode ser adicionado depois como evolução
+
+### Contexto separado evita vazamento de dados
+
+- Global: dados de entrada do usuário
+- Workflow: contexto compartilhado entre passos
+- Agent: contexto privado de cada agente
+- Essa separação é crítica para workflows multi-etapa
+
+### Consolidação precisa tratar falhas parciais
+
+- Status pode ser: completed (todos obrigatórios ok), failed (falhou obrigatório), partial (alguns opcionais falharam)
+- Resumo legível ajuda na debugging e auditoria
+
+### Observabilidade é obrigatória, não opcional
+
+- Todo `orchestrate()` deve logar: objetivo, plano, passos, resultado, duração, tokens
+- Formatação legível para console facilita desenvolvimento
+- Estrutura de log pode ser expandida para persistência futura
