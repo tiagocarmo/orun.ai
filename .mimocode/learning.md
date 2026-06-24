@@ -256,3 +256,22 @@ Começar com dados mock no WS-C e substituir por Prisma queries na integração 
 - MCP deve significar Model Context Protocol no projeto.
 - Multi-component planning é uma capacidade desejada de orquestração, não o nome do protocolo.
 - O produto saiu de uma ideia de IA preditiva/site institucional para uma AI Workforce Platform com foco inicial em automação comercial.
+
+---
+
+## Sessão 9 — Planejamento Sequencial de Construção
+
+### Plano mestre precisa ser operacional, não só estratégico
+
+- Um plano útil para execução futura precisa dizer ordem, escopo, critério de conclusão e qual arquivo o agente executor deve abrir.
+- Separar um `README` mestre e um `.md` por ponto deixa a sequência mais fácil de operar sem ambiguidade.
+
+### Sequenciamento importa mais do que volume
+
+- No estado atual do projeto, abrir muitos pontos ao mesmo tempo aumentaria ruído.
+- A ordem correta é estabilizar MVP, criar testes, endurecer dados, depois só então workflow engine, orchestrator e integrações.
+
+### Regra de execução consolidada
+
+- Spawn one agent per point, executar um e depois puxar o outro, até concluir.
+- Isso preserva contexto, reduz mistura de escopos e facilita validação por etapa.

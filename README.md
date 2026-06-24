@@ -115,6 +115,7 @@ src/
 - `docs/workflows.md` — workflows oficiais da jornada comercial e operacional
 - `docs/orchestrator.md` — coordenação entre agentes, contexto, MCP e governança
 - `DESIGN.md` — identidade visual e princípios de experiência
+- `docs/plans/sequential-build/` — plano canônico de construção sequencial, com um `.md` por ponto
 - `docs/features/` — documentação por feature
 - `docs/codex-report/` — auditoria Codex de requisitos, implementação real e lacunas
 - `.mimocode/learning.md` — aprendizados do projeto
