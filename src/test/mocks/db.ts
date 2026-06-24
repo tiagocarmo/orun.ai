@@ -13,6 +13,7 @@ export const mockDb = {
     update: createMockFn(),
     delete: createMockFn(),
     count: createMockFn(),
+    groupBy: createMockFn(),
   },
   leadEvent: {
     create: createMockFn(),
@@ -20,6 +21,7 @@ export const mockDb = {
   },
   agent: {
     findUnique: createMockFn(),
+    findMany: createMockFn(),
   },
   agentVersion: {
     findFirst: createMockFn(),
@@ -30,6 +32,7 @@ export const mockDb = {
     count: createMockFn(),
     findMany: createMockFn(),
     findUnique: createMockFn(),
+    groupBy: createMockFn(),
   },
   agentLog: {
     create: createMockFn(),
@@ -45,12 +48,14 @@ export const mockDb = {
     findMany: createMockFn(),
     create: createMockFn(),
     update: createMockFn(),
+    count: createMockFn(),
   },
   workflowRun: {
     findUnique: createMockFn(),
     findMany: createMockFn(),
     create: createMockFn(),
     update: createMockFn(),
+    count: createMockFn(),
   },
   document: {
     create: createMockFn(),
@@ -58,6 +63,13 @@ export const mockDb = {
     findMany: createMockFn(),
     update: createMockFn(),
     delete: createMockFn(),
+  },
+  conversation: {
+    count: createMockFn(),
+    findMany: createMockFn(),
+    findUnique: createMockFn(),
+    create: createMockFn(),
+    update: createMockFn(),
   },
 };
 

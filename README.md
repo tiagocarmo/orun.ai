@@ -32,6 +32,12 @@ Depois, a ideia evoluiu de um site institucional de IA para uma plataforma de **
 - Orchestrator core com planejamento, delegacao e consolidacao de resultados.
 - MCP tools executaveis com calendar e document stubs, retry e audit logs.
 - Equipe digital comercial completa: scheduling, follow-up, research, document, human-handoff.
+- Autenticacao via API key e session tokens HMAC-SHA256.
+- RBAC com tres roles (admin, operator, viewer) e 20 permissoes granulares.
+- Mascaramento de PII (nome, email, telefone) com estrategias full/partial/hash/redact.
+- Controles de governanca: limites de acao por hora/dia e fluxo de aprovacao para acoes sensiveis.
+- Politica de secrets: validacao de referencias, mascaramento em logs.
+- Dashboard metrics: leads por status, runs de agentes, workflows, conversas.
 
 ## Tese do Produto
 
@@ -151,6 +157,7 @@ src/
 - `docs/features/stabilize-mvp.md` — estabilização do primeiro ponto do plano sequencial
 - `docs/features/tests-and-quality.md` — primeira camada real de testes e revisão dos gates de qualidade
 - `docs/features/data-and-persistence.md` — endurecimento de schema, migrations e politicas de persistencia do MVP
+- `docs/features/operations-and-security.md` — auth, mascaramento de PII, governanca, RBAC e metricas do dashboard
 - `docs/codex-report/` — auditoria Codex de requisitos, implementação real e lacunas
 - `.mimocode/learning.md` — aprendizados do projeto
 - `.mimocode/session/` — histórico de sessões

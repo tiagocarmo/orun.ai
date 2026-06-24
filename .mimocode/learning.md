@@ -511,3 +511,51 @@ Começar com dados mock no WS-C e substituir por Prisma queries na integração 
 - DocumentAgent gera templates localmente
 - CalendarAgent pode usar MCP tools ou lógica local
 - Esses stubs podem ser substituídos por implementações reais depois
+
+---
+
+## Sessão 16 — Operations and Security Point 08
+
+### Auth com API key e session tokens funciona sem banco
+
+- Gerar e validar API keys com HMAC-SHA256 usando apenas `crypto` nativo do Node.js
+- Session tokens são stateless: payload base64url + assinatura HMAC
+- Armazenamento em Map em memória é aceitável para MVP; produção deve usar Redis ou banco
+
+### RBAC granular facilita extensão futura
+
+- Definir 20 permissões粒ares (ex: `leads:read`, `leads:write`, `leads:delete`) permite mapear exatamente o que cada role pode fazer
+- `hasPermission`, `hasAnyPermission`, `hasAllPermissions` dão flexibilidade para checks compostos
+- Adicionar um novo role é apenas incluir o array de permissões
+
+### Mascaramento de PII deve ser a default para logs
+
+- Funções `maskLogData` e `maskPII` aplicam estratégias diferentes por campo
+- `message` → `[REDACTED]` (nunca logar conteúdo de mensagens)
+- `token`/`password` → `full` masking
+- `name`/`email`/`phone` → `partial` masking (preserva extremos para debugging)
+
+### Governance com limites de ação previne abuso
+
+- Limites por hora e por dia por tipo de ação (ex: max 50 execuções de agente/hora)
+- Ações sensíveis (delete, settings) exigem aprovação humana via `ApprovalRequest`
+- `evaluateAction` combina check de limite + criação de aprovação em uma chamada
+
+### Secrets policy previne vazamento de credenciais
+
+- Validação de `SecretReference` garante que locais proibidos (vault) são rejeitados
+- `redactSecretsFromLog` usa regex para detectar e redact patterns comuns (Bearer, sk-, api_key=)
+- Nunca deve haver segredos em texto plano em logs
+
+### Dashboard metrics agregam dados de múltiplos modelos
+
+- Queries Prisma com `count`, `groupBy` e `findMany` combinados para métricas
+- Métricas de agentes incluem: total de runs, sucesso/falha, média de duração, tokens consumidos, runs por agente
+- Mock do db.ts precisa de `count`, `groupBy`, `findMany` em todos os modelos usados
+
+### Bug pre-existente: researchType não definido
+
+- `src/lib/agents/research.ts:117` referenciava `researchType` (sem underscore) mas o parâmetro era `_researchType`
+- Causava ReferenceError em runtime e erro de tipo no build
+- Correção: remover o underscore do parâmetro
+- Lição: parâmetros com underscore prefix indicam "intencionalmente não usado", mas se o código os usa, o underscore deve ser removido

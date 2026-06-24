@@ -83,7 +83,7 @@ export class ResearchAgent extends AbstractAgent {
 
 async function performResearch(
   lead: { name: string | null; email: string | null; company: string | null; phone: string | null },
-  _researchType: string,
+  researchType: string,
   _sources: string[]
 ): Promise<{
   data: Record<string, unknown>;
