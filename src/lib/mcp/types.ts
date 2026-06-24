@@ -27,3 +27,27 @@ export interface MCPServerInfo {
   version: string;
   tools: MCPToolDefinition[];
 }
+
+export interface MCPToolOptions {
+  maxRetries?: number;
+  retryDelayMs?: number;
+  timeoutMs?: number;
+  requiredPermissions?: MCPToolPermission[];
+}
+
+export interface MCPToolPermission {
+  action: string;
+  resource: string;
+  requiresApproval?: boolean;
+}
+
+export interface MCPToolExecutionLog {
+  toolName: string;
+  input: Record<string, unknown>;
+  output?: MCPToolResult;
+  error?: string;
+  durationMs: number;
+  timestamp: string;
+  integrationId?: string;
+  retries: number;
+}

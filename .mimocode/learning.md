@@ -441,3 +441,38 @@ Começar com dados mock no WS-C e substituir por Prisma queries na integração 
 - Todo `orchestrate()` deve logar: objetivo, plano, passos, resultado, duração, tokens
 - Formatação legível para console facilita desenvolvimento
 - Estrutura de log pode ser expandida para persistência futura
+
+---
+
+## Sessão 14 — MCP and Integrations Point 06
+
+### MCP tools stubs são úteis para MVP
+
+- Implementar tools como stubs (sem APIs externas reais) permite validar a arquitetura
+- Calendar stub simula disponibilidade e cria eventos locais
+- Document stub gera Markdown/HTML sem dependência externa
+- Esses stubs podem ser substituídos por implementações reais depois
+
+### Retry logic é simples mas crítica
+
+- `callToolWithRetry` implementa retry com delay configurável
+- Importante para tools que podem falhar temporariamente
+- Max retries e retry delay devem ser configuráveis por tool
+
+### Integration layer resolve segredos de forma segura
+
+- `resolveSecretReference` suporta `env:` para variáveis de ambiente
+- Nunca persistir credenciais no banco
+- Referências permitem flexibilidade sem comprometer segurança
+
+### Execution logs são essenciais para auditoria
+
+- Cada chamada de tool é logada com input, output, duração, erros
+- Logs podem ser consultados por tool name
+- Essa rastreabilidade é obrigatória para conformidade
+
+### Base class simplifica criação de tools
+
+- `BaseMCPTool`提供 helpers para criar resultados de sucesso/erro
+- Tools concretas apenas implementam `definition()` e `execute()`
+- Padrão consistente facilita manutenção
