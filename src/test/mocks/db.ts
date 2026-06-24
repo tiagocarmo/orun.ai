@@ -39,6 +39,18 @@ export const mockDb = {
     update: createMockFn(),
     delete: createMockFn(),
   },
+  workflow: {
+    findUnique: createMockFn(),
+    findMany: createMockFn(),
+    create: createMockFn(),
+    update: createMockFn(),
+  },
+  workflowRun: {
+    findUnique: createMockFn(),
+    findMany: createMockFn(),
+    create: createMockFn(),
+    update: createMockFn(),
+  },
 };
 
 export function resetDbMocks() {

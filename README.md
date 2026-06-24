@@ -28,6 +28,7 @@ Depois, a ideia evoluiu de um site institucional de IA para uma plataforma de **
 - A tela de lead permite abrir a execucao manual com o lead preselecionado.
 - Arquivar e desarquivar leads preserva o ultimo status ativo conhecido.
 - O webhook de leads passa a registrar `AgentRun` e `AgentLog` pela pipeline padrao.
+- Workflow Engine funcional com execucao sequencial, pausa, retomada e cancelamento.
 
 ## Tese do Produto
 

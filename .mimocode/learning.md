@@ -338,3 +338,72 @@ Começar com dados mock no WS-C e substituir por Prisma queries na integração 
 
 - Spawn one agent per point, executar um e depois puxar o outro, até concluir.
 - Isso preserva contexto, reduz mistura de escopos e facilita validação por etapa.
+
+---
+
+## Sessão 11 — Correção do erro deletedAt no banco SQLite
+
+### Migration documentada não aplicada causa erro em runtime
+
+- A migration `20260624084500_data_persistence_foundation` foi criada e documentada em `docs/features/data-and-persistence.md`, mas nunca foi aplicada ao banco SQLite
+- A tabela `Lead` foi criada sem as colunas `deletedAt` e `externalId`, enquanto o código em `src/app/actions/leads.ts` as usava em 6 consultas Prisma
+- O erro `P2022: The column main.Lead.deletedAt does not exist` aparecia em `/leads`, `/runs` (busca de lead) e na busca global do site
+
+### Prisma migrate engine pode falhar em ambientes específimos
+
+- `prisma migrate dev` e `prisma migrate deploy` falharam com `Schema engine error:` sem detalhe adicional
+- A solução segura foi aplicar o SQL diretamente via `sqlite3` no banco `prisma/dev.db`
+- Após aplicar o SQL manual, `prisma generate` funcionou normalmente e o client foi regenerado
+
+### SQL direto como bypass seguro para engine instável
+
+- `ALTER TABLE "Lead" ADD COLUMN "deletedAt" DATETIME;` — adiciona coluna para soft delete
+- `ALTER TABLE "Lead" ADD COLUMN "externalId" TEXT;` — adiciona coluna para deduplicação
+- `CREATE UNIQUE INDEX "Lead_externalId_key"` — garante unicidade do external ID
+- `CREATE INDEX "Lead_status_deletedAt_idx"` e `CREATE INDEX "Lead_deletedAt_idx"` — otimizam consultas
+- `ALTER TABLE "Integration" RENAME COLUMN "credentials" TO "secretRef"` — alinha com o schema Prisma
+
+### Tabela `_prisma_migrations` é necessária para tracking
+
+- Sem ela, o Prisma não reconhece migrations aplicadas e tenta reaplicar
+- Criar manualmente com registro da migration aplicada resolve o problema para `prisma migrate status`
+
+### Lição
+
+- Quando o Prisma engine falha, aplicar SQL manualmente no SQLite é válido e seguro
+- Sempre verificar o estado real do banco (`sqlite3 dev.db ".schema Lead"`) antes de assumir que a migration foi aplicada
+- A migration documentada não garante execução — validar com `_prisma_migrations` ou `.schema` do banco
+
+---
+
+## Sessão 12 — Workflow Engine Point 04
+
+### Engine de workflows precisa de check de status entre passos
+
+- O `executeSteps` precisa consultar o `WorkflowRun` entre passos para detectar pause/cancel
+- Isso cria um ponto de acoplamento com o banco que precisa ser mockado nos testes
+- O mock de `workflowRun.findUnique` deve retornar o run atual para evitar falsos negativos
+
+### Variáveis de contexto resolvidas por template
+
+- Usar `$input.field`, `$previous.field` e `$context.field` como templates de resolução mantém o formato simples e extensível
+- A resolução发生在 `resolveInput` antes de chamar o agente, isolando a lógica de mapeamento
+
+### Testes de workflow precisam de mocks em cadeia
+
+- Mock do `db.workflow.findUnique` para retornar o workflow
+- Mock do `db.workflowRun.create` para retornar o run
+- Mock do `db.workflowRun.findUnique` para o check de status entre passos
+- Mock do `executeAgent` para simular a execução do agente
+- Esse padrão de mocks em cadeia é comum em engines que orquestram múltiplas chamadas
+
+### Server actions seguem o padrão existente
+
+- Manter `ApiResponse<T>` como tipo de retorno consistency com `leads.ts`
+- Usar `revalidatePath` para invalidar cache após mudanças
+- Separar a lógica de negócio (engine) das actions (server-side) mantém testabilidade
+
+### Documentação da feature deve explicar formato dos passos
+
+- O campo `steps` do `Workflow` é JSON serializado — documentar o formato esperado é essencial
+- Incluir exemplos de variáveis de contexto e condições ajuda na adoção
