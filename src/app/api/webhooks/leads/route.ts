@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createHmac, timingSafeEqual } from "crypto";
 import { agentRegistry } from "@/lib/agents";
+import { executeAgent } from "@/lib/agents";
 import "@/lib/agents";
 
 const WEBHOOK_SECRET = process.env.WEBHOOK_SECRET ?? "";
@@ -59,23 +60,26 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
   }
 
-  const result = await leadAgent.execute(body, {
-    agentId: "lead-intake",
-    runId: "webhook",
-    model: "webhook",
-    temperature: 0,
-    maxTokens: 0,
-  });
+  try {
+    const { runId, result } = await executeAgent("lead-intake", body);
+    if (result.status === "failed") {
+      return NextResponse.json(
+        { success: false, error: result.error, runId },
+        { status: 422 }
+      );
+    }
 
-  if (result.status === "failed") {
     return NextResponse.json(
-      { success: false, error: result.error },
-      { status: 422 }
+      { success: true, data: result.output, runId },
+      { status: 201 }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      {
+        success: false,
+        error: error instanceof Error ? error.message : "Unexpected webhook execution error",
+      },
+      { status: 500 }
     );
   }
-
-  return NextResponse.json(
-    { success: true, data: result.output },
-    { status: 201 }
-  );
 }

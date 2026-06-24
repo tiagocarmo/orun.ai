@@ -139,6 +139,7 @@ export class QualificationAgent extends AbstractAgent {
           classification,
           reasoning,
           nextAction,
+          runId: context.runId,
           model: context.model,
         }),
       },

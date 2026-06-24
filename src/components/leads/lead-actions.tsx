@@ -6,13 +6,15 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { updateLead, deleteLead } from "@/app/actions/leads";
+import { parseLeadMetadata, restoreLeadStatus } from "@/lib/leads/metadata";
 
 interface LeadActionsProps {
   leadId: string;
   currentStatus: string;
+  currentMetadata?: string | null;
 }
 
-export function LeadActions({ leadId, currentStatus }: LeadActionsProps) {
+export function LeadActions({ leadId, currentStatus, currentMetadata }: LeadActionsProps) {
   const router = useRouter();
   const [archiveModalOpen, setArchiveModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -21,7 +23,10 @@ export function LeadActions({ leadId, currentStatus }: LeadActionsProps) {
 
   async function handleArchive() {
     setLoading(true);
-    const result = await updateLead(leadId, { status: "archived" });
+    const nextStatus = isArchived
+      ? restoreLeadStatus(parseLeadMetadata(currentMetadata))
+      : "archived";
+    const result = await updateLead(leadId, { status: nextStatus });
     if (result.success) {
       toast.success(isArchived ? "Lead desarquivado" : "Lead arquivado");
       setArchiveModalOpen(false);

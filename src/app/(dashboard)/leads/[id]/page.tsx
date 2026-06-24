@@ -62,7 +62,7 @@ export default async function LeadDetailPage({ params }: { params: Promise<{ id:
           <Link href={`/runs?lead=${lead.id}`}>
             <Button size="sm">Executar Agente</Button>
           </Link>
-          <LeadActions leadId={lead.id} currentStatus={lead.status} />
+          <LeadActions leadId={lead.id} currentStatus={lead.status} currentMetadata={lead.metadata} />
           <Link href="/leads">
             <Button variant="ghost" size="sm">Voltar</Button>
           </Link>

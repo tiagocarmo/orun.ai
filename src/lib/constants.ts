@@ -28,5 +28,15 @@ export type IntegrationType = (typeof INTEGRATION_TYPES)[number];
 export const TASK_STATUSES = ["pending", "running", "completed", "failed", "cancelled"] as const;
 export type TaskStatus = (typeof TASK_STATUSES)[number];
 
-export const LEAD_EVENT_TYPES = ["created", "qualified", "status_changed", "note", "enriched", "contacted"] as const;
+export const LEAD_EVENT_TYPES = [
+  "created",
+  "qualified",
+  "status_changed",
+  "archived",
+  "unarchived",
+  "intake_duplicate_detected",
+  "note",
+  "enriched",
+  "contacted",
+] as const;
 export type LeadEventType = (typeof LEAD_EVENT_TYPES)[number];

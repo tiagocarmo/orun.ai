@@ -219,6 +219,28 @@ Começar com dados mock no WS-C e substituir por Prisma queries na integração 
 
 ## Sessão 7 — Auditoria Codex do Projeto Orun.AI
 
+## Sessão 8 — Stabilize MVP Point 01
+
+### Prefill por query reduz erro de payload na execucao manual
+
+- Para um fluxo manual orientado por lead, montar o payload a partir de uma funcao dedicada (`buildLeadRunInput`) evita que a UI "adivinhe" o schema do agente em mais de um lugar
+- Abrir `/runs?lead=<id>` a partir da tela do lead deixa o fluxo principal menos propenso a erro humano e mais aderente ao caso de uso real do MVP
+
+### Restaurar estado exige memoria minima do status anterior
+
+- "Desarquivar" so fica coerente quando o sistema guarda o ultimo status ativo conhecido
+- Salvar `lastActiveStatus` em `metadata` foi a menor mudanca segura dentro do MVP atual, sem abrir o escopo maior de schema do ponto 03
+
+### Auditoria consistente pede reutilizar a pipeline principal
+
+- O webhook ficou mais confiavel quando passou a usar `executeAgent` em vez de chamar o agente diretamente
+- Isso centraliza `AgentRun` e `AgentLog` e reduz divergencia entre fluxos manuais e automatizados
+
+### Testes com `vi.mock` hoisted exigem cuidado
+
+- Em Vitest, factories de `vi.mock` sao hoisted; mocks compartilhados precisam nascer via `vi.hoisted()` para evitar `ReferenceError`
+- Esse detalhe e facil de esquecer quando adicionamos os primeiros testes do projeto
+
 ### Auditoria precisa comparar promessa, histórico e código
 
 - A documentação do Orun descreve uma plataforma workforce ampla, mas o código atual é um MVP parcial com CRUD, dois agentes, runs, conversas, dashboard e stubs.

@@ -2,6 +2,7 @@ import { db } from "@/lib/db";
 import { AbstractAgent } from "./base";
 import { AgentDefinition, AgentContext, AgentExecuteResult } from "./types";
 import { webhookLeadSchema } from "@/lib/validators";
+import { parseLeadMetadata, stringifyLeadMetadata } from "@/lib/leads/metadata";
 
 export class LeadIntakeAgent extends AbstractAgent {
   definition(): AgentDefinition {
@@ -25,7 +26,7 @@ export class LeadIntakeAgent extends AbstractAgent {
 
   async execute(
     input: Record<string, unknown>,
-    _context: AgentContext
+    context: AgentContext
   ): Promise<AgentExecuteResult> {
     const validation = this.validate(input);
     if (!validation.valid) {
@@ -41,6 +42,17 @@ export class LeadIntakeAgent extends AbstractAgent {
     if (parsed.email) {
       const existing = await db.lead.findFirst({ where: { email: parsed.email } });
       if (existing) {
+        await db.leadEvent.create({
+          data: {
+            leadId: existing.id,
+            type: "intake_duplicate_detected",
+            data: JSON.stringify({
+              identifier: "email",
+              value: parsed.email,
+              runId: context.runId,
+            }),
+          },
+        });
         return {
           status: "completed",
           output: {
@@ -55,6 +67,17 @@ export class LeadIntakeAgent extends AbstractAgent {
     if (parsed.phone) {
       const existing = await db.lead.findFirst({ where: { phone: parsed.phone } });
       if (existing) {
+        await db.leadEvent.create({
+          data: {
+            leadId: existing.id,
+            type: "intake_duplicate_detected",
+            data: JSON.stringify({
+              identifier: "phone",
+              value: parsed.phone,
+              runId: context.runId,
+            }),
+          },
+        });
         return {
           status: "completed",
           output: {
@@ -67,10 +90,26 @@ export class LeadIntakeAgent extends AbstractAgent {
     }
 
     if (parsed.externalId) {
-      const existing = await db.lead.findFirst({
-        where: { metadata: JSON.stringify({ externalId: parsed.externalId }) },
+      const candidates = await db.lead.findMany({
+        where: { metadata: { not: null } },
+        select: { id: true, metadata: true },
+      });
+      const existing = candidates.find((candidate) => {
+        const metadata = parseLeadMetadata(candidate.metadata);
+        return metadata.externalId === parsed.externalId;
       });
       if (existing) {
+        await db.leadEvent.create({
+          data: {
+            leadId: existing.id,
+            type: "intake_duplicate_detected",
+            data: JSON.stringify({
+              identifier: "externalId",
+              value: parsed.externalId,
+              runId: context.runId,
+            }),
+          },
+        });
         return {
           status: "completed",
           output: {
@@ -91,11 +130,14 @@ export class LeadIntakeAgent extends AbstractAgent {
         source: parsed.source ?? null,
         message: parsed.message ?? null,
         status: "new",
-        metadata: parsed.externalId
-          ? JSON.stringify({ externalId: parsed.externalId, ...(parsed.metadata as Record<string, unknown> ?? {}) })
-          : parsed.metadata
-            ? JSON.stringify(parsed.metadata)
-            : null,
+        metadata: stringifyLeadMetadata(
+          parsed.externalId
+            ? {
+              externalId: parsed.externalId,
+              ...(((parsed.metadata as Record<string, unknown> | undefined) ?? {})),
+            }
+            : parsed.metadata
+        ),
       },
     });
 
@@ -105,8 +147,10 @@ export class LeadIntakeAgent extends AbstractAgent {
         type: "created",
         data: JSON.stringify({
           source: parsed.source,
-          channel: parsed.metadata,
-          rawInput: parsed,
+          externalId: parsed.externalId,
+          metadata: parsed.metadata ?? null,
+          runId: context.runId,
+          agent: this.getSlug(),
         }),
       },
     });

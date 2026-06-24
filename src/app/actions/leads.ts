@@ -1,6 +1,13 @@
 "use server";
 
 import { db } from "@/lib/db";
+import {
+  LeadActiveStatus,
+  parseLeadMetadata,
+  stringifyLeadMetadata,
+  withLastActiveStatus,
+  withoutLastActiveStatus,
+} from "@/lib/leads/metadata";
 import { createLeadSchema, updateLeadSchema } from "@/lib/validators";
 import { ApiResponse, LeadWithEvents, PaginatedResponse } from "@/lib/types";
 import { revalidatePath } from "next/cache";
@@ -48,7 +55,7 @@ export async function createLead(
       source: data.source ?? null,
       message: data.message ?? null,
       status: "new",
-      metadata: data.metadata ? JSON.stringify(data.metadata) : null,
+      metadata: stringifyLeadMetadata(data.metadata),
     },
   });
 
@@ -132,6 +139,10 @@ export async function updateLead(
 
   const data = validation.data;
   const updateData: Record<string, unknown> = {};
+  const existingMetadata = parseLeadMetadata(existing.metadata);
+  let nextMetadata = data.metadata !== undefined ? data.metadata : existingMetadata;
+  let nextEventType: string | null = null;
+  let nextEventData: Record<string, unknown> | null = null;
 
   if (data.name !== undefined) updateData.name = data.name;
   if (data.email !== undefined) updateData.email = data.email;
@@ -142,22 +153,40 @@ export async function updateLead(
   if (data.status !== undefined) updateData.status = data.status;
   if (data.qualificationScore !== undefined) updateData.qualificationScore = data.qualificationScore;
   if (data.qualificationReason !== undefined) updateData.qualificationReason = data.qualificationReason;
-  if (data.metadata !== undefined) updateData.metadata = JSON.stringify(data.metadata);
 
   if (data.status && data.status !== existing.status) {
-    await db.leadEvent.create({
-      data: {
-        leadId: id,
-        type: "status_changed",
-        data: JSON.stringify({ from: existing.status, to: data.status }),
-      },
-    });
+    if (data.status === "archived" && existing.status !== "archived") {
+      nextMetadata = withLastActiveStatus(nextMetadata, existing.status as LeadActiveStatus);
+      nextEventType = "archived";
+    } else if (existing.status === "archived" && data.status !== "archived") {
+      nextMetadata = withoutLastActiveStatus(nextMetadata);
+      nextEventType = "unarchived";
+    } else {
+      nextEventType = "status_changed";
+    }
+
+    nextEventData = { from: existing.status, to: data.status };
+  }
+
+  const serializedNextMetadata = stringifyLeadMetadata(nextMetadata);
+  if (serializedNextMetadata !== existing.metadata) {
+    updateData.metadata = serializedNextMetadata;
   }
 
   const lead = await db.lead.update({
     where: { id },
     data: updateData,
   });
+
+  if (nextEventType && nextEventData) {
+    await db.leadEvent.create({
+      data: {
+        leadId: id,
+        type: nextEventType,
+        data: JSON.stringify(nextEventData),
+      },
+    });
+  }
 
   revalidatePath("/");
 

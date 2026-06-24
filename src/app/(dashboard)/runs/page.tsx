@@ -1,14 +1,16 @@
 "use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { getAgents } from "@/app/actions/agents";
-import { searchLeads } from "@/app/actions/leads";
+import { getLead, searchLeads } from "@/app/actions/leads";
 import { runAgent } from "@/app/actions/runs";
 import type { AgentWithVersions } from "@/lib/types";
+import { buildLeadRunInput } from "@/lib/runs/manual-input";
 
 interface LeadResult {
   id: string;
@@ -19,6 +21,7 @@ interface LeadResult {
 }
 
 export default function RunAgentPage() {
+  const searchParams = useSearchParams();
   const [agents, setAgents] = useState<AgentWithVersions[]>([]);
   const [agentSlug, setAgentSlug] = useState("");
   const [input, setInput] = useState("");
@@ -42,6 +45,39 @@ export default function RunAgentPage() {
     }
     load();
   }, []);
+
+  useEffect(() => {
+    const leadIdFromQuery = searchParams.get("lead");
+    if (!leadIdFromQuery) {
+      return;
+    }
+    const leadId: string = leadIdFromQuery;
+
+    async function loadLeadFromQuery() {
+      const res = await getLead(leadId);
+      if (!res.success) {
+        return;
+      }
+
+      const lead = {
+        id: res.data.id,
+        name: res.data.name,
+        email: res.data.email,
+        company: res.data.company,
+        phone: res.data.phone,
+      };
+
+      setSelectedLead(lead);
+      setSearchQuery(lead.name);
+      setInput(buildLeadRunInput(lead));
+
+      if (!agentSlug && agents.some((agent) => agent.slug === "qualification")) {
+        setAgentSlug("qualification");
+      }
+    }
+
+    void loadLeadFromQuery();
+  }, [agentSlug, agents, searchParams]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -85,12 +121,7 @@ export default function RunAgentPage() {
     setSelectedLead(lead);
     setSearchQuery(lead.name);
     setShowDropdown(false);
-    setInput(JSON.stringify({
-      name: lead.name,
-      email: lead.email,
-      phone: lead.phone,
-      company: lead.company,
-    }, null, 2));
+    setInput(buildLeadRunInput(lead));
   }
 
   async function handleRun() {

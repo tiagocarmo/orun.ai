@@ -22,6 +22,13 @@ Depois, a ideia evoluiu de um site institucional de IA para uma plataforma de **
 - Multi-Agent Orchestrator
 - Analytics & Observability
 
+## Estado Atual do MVP
+
+- Execucao manual do fluxo `lead -> qualification` usa `leadId` valido.
+- A tela de lead permite abrir a execucao manual com o lead preselecionado.
+- Arquivar e desarquivar leads preserva o ultimo status ativo conhecido.
+- O webhook de leads passa a registrar `AgentRun` e `AgentLog` pela pipeline padrao.
+
 ## Tese do Produto
 
 O foco inicial é automação comercial: captar leads, qualificar oportunidades, enriquecer contexto, agendar reuniões, fazer follow-up, gerar documentos e manter histórico auditável. O objetivo de longo prazo é permitir que empresas criem e operem times de agentes confiáveis, especializados e supervisionáveis.
@@ -117,6 +124,7 @@ src/
 - `DESIGN.md` — identidade visual e princípios de experiência
 - `docs/plans/sequential-build/` — plano canônico de construção sequencial, com um `.md` por ponto
 - `docs/features/` — documentação por feature
+- `docs/features/stabilize-mvp.md` — estabilização do primeiro ponto do plano sequencial
 - `docs/codex-report/` — auditoria Codex de requisitos, implementação real e lacunas
 - `.mimocode/learning.md` — aprendizados do projeto
 - `.mimocode/session/` — histórico de sessões
