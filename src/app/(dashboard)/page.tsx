@@ -22,16 +22,16 @@ export default async function DashboardPage() {
     ]);
 
   const stats = [
-    { label: "Total Leads", value: totalLeads, href: "/leads" },
-    { label: "Qualified Leads", value: qualifiedLeads, href: "/leads?status=qualified" },
-    { label: "Active Agents", value: activeAgents, href: "/agents" },
-    { label: "Recent Runs", value: recentRuns, href: "/runs/history" },
+    { label: "Total de Leads", value: totalLeads, href: "/leads" },
+    { label: "Leads Qualificados", value: qualifiedLeads, href: "/leads?status=qualified" },
+    { label: "Agentes Ativos", value: activeAgents, href: "/agents" },
+    { label: "Execuções Recentes", value: recentRuns, href: "/runs/history" },
   ];
 
   const recentActivity = recentEvents.map((event) => ({
     id: event.id,
     type: event.type,
-    leadName: event.lead?.name ?? "Unknown",
+    leadName: event.lead?.name ?? "Desconhecido",
     createdAt: formatRelativeTime(event.createdAt),
   }));
 
@@ -62,7 +62,7 @@ export default async function DashboardPage() {
   const agentMap = new Map(agents.map((a) => [a.id, a.name]));
 
   const agentPerformanceData = agentRuns.map((ar) => ({
-    name: agentMap.get(ar.agentId) ?? "Unknown",
+    name: agentMap.get(ar.agentId) ?? "Desconhecido",
     runs: ar._count.id,
   }));
 
@@ -73,7 +73,7 @@ export default async function DashboardPage() {
   });
 
   const statusData = statusCounts.map((sc) => ({
-    name: sc.status ?? "Unknown",
+    name: sc.status ?? "Desconhecido",
     value: sc._count.id,
   }));
 
@@ -82,14 +82,14 @@ export default async function DashboardPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-display font-semibold text-ink">Dashboard</h1>
-          <p className="text-sm text-muted mt-1">Welcome to Orun.AI Workforce Platform</p>
+          <p className="text-sm text-muted mt-1">Bem-vindo à Plataforma Orun.AI</p>
         </div>
         <div className="flex gap-2">
           <Link href="/leads/new">
-            <Button variant="secondary" size="sm">Create Lead</Button>
+            <Button variant="secondary" size="sm">Criar Lead</Button>
           </Link>
           <Link href="/runs">
-            <Button size="sm">Run Agent</Button>
+            <Button size="sm">Executar Agente</Button>
           </Link>
         </div>
       </div>
@@ -122,11 +122,11 @@ function formatRelativeTime(date: Date): string {
   const now = new Date();
   const diffMs = now.getTime() - new Date(date).getTime();
   const diffSec = Math.floor(diffMs / 1000);
-  if (diffSec < 60) return `${diffSec}s ago`;
+  if (diffSec < 60) return `${diffSec}s atrás`;
   const diffMin = Math.floor(diffSec / 60);
-  if (diffMin < 60) return `${diffMin} min ago`;
+  if (diffMin < 60) return `${diffMin} min atrás`;
   const diffHr = Math.floor(diffMin / 60);
-  if (diffHr < 24) return `${diffHr}h ago`;
+  if (diffHr < 24) return `${diffHr}h atrás`;
   const diffDay = Math.floor(diffHr / 24);
-  return `${diffDay}d ago`;
+  return `${diffDay}d atrás`;
 }

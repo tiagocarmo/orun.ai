@@ -157,7 +157,7 @@ export default function RunAgentPage() {
       </div>
 
       <Card>
-        <CardTitle>Configuracao</CardTitle>
+        <CardTitle>Configuração</CardTitle>
         <div className="mt-4 space-y-4">
           <div className="flex flex-col gap-1.5">
             <label className="text-sm font-medium text-body">Selecionar Agente</label>

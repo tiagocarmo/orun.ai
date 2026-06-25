@@ -37,11 +37,11 @@ export default function AgentsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-display font-semibold text-ink">Agents</h1>
-          <p className="text-sm text-muted mt-1">Manage your AI agents</p>
+          <h1 className="text-2xl font-display font-semibold text-ink">Agentes</h1>
+          <p className="text-sm text-muted mt-1">Gerencie seus agentes de IA</p>
         </div>
         <Link href="/agents/new">
-          <Button>Create Agent</Button>
+          <Button>Criar Agente</Button>
         </Link>
       </div>
 
@@ -56,20 +56,20 @@ export default function AgentsPage() {
                 : "bg-surface-card text-muted hover:bg-surface-strong"
             }`}
           >
-            {f.charAt(0).toUpperCase() + f.slice(1)}
+            {f === "all" ? "Todos" : f === "active" ? "Ativos" : "Inativos"}
           </button>
         ))}
       </div>
 
       {loading ? (
-        <p className="text-sm text-muted">Loading agents...</p>
+        <p className="text-sm text-muted">Carregando agentes...</p>
       ) : filtered.length === 0 ? (
         <EmptyState
-          title="No agents found"
-          description="Create your first agent to get started."
+          title="Nenhum agente encontrado"
+          description="Crie seu primeiro agente para começar."
           action={
             <Link href="/agents/new">
-              <Button size="sm">Create Agent</Button>
+              <Button size="sm">Criar Agente</Button>
             </Link>
           }
         />
@@ -81,11 +81,11 @@ export default function AgentsPage() {
                 <div className="flex items-start justify-between mb-2">
                   <h3 className="font-medium text-ink">{agent.name}</h3>
                   <Badge variant={agent.isActive ? "success" : "neutral"}>
-                    {agent.isActive ? "active" : "inactive"}
+                    {agent.isActive ? "Ativo" : "Inativo"}
                   </Badge>
                 </div>
                 <p className="text-sm text-muted line-clamp-2 mb-3">{agent.description}</p>
-                <p className="text-xs text-muted-soft">Model: {agent.model}</p>
+                <p className="text-xs text-muted-soft">Modelo: {agent.model}</p>
               </Card>
             </Link>
           ))}

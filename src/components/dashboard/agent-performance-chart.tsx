@@ -9,7 +9,7 @@ interface AgentData {
 export function AgentPerformanceChart({ data }: { data: AgentData[] }) {
   return (
     <div className="bg-surface-card border border-hairline rounded-lg p-6">
-      <h3 className="text-sm font-semibold text-ink mb-4">Performance dos Agentes</h3>
+      <h3 className="text-sm font-semibold text-ink mb-4">Desempenho dos Agentes</h3>
       <ResponsiveContainer width="100%" height={200}>
         <BarChart data={data}>
           <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />

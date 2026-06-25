@@ -28,7 +28,7 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
         </div>
         <div className="flex gap-2">
           <Link href={`/agents/${agent.id}/edit`}>
-            <Button variant="secondary" size="sm">Edit</Button>
+            <Button variant="secondary" size="sm">Editar</Button>
           </Link>
         </div>
       </div>
@@ -37,47 +37,47 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
         <Card className="text-center">
           <p className="text-xs text-muted">Status</p>
           <Badge variant={agent.isActive ? "success" : "neutral"} className="mt-1">
-            {agent.isActive ? "active" : "inactive"}
+            {agent.isActive ? "Ativo" : "Inativo"}
           </Badge>
         </Card>
         <Card className="text-center">
-          <p className="text-xs text-muted">Total Runs</p>
+          <p className="text-xs text-muted">Total de Execuções</p>
           <p className="text-xl font-semibold text-ink mt-1">{agent._count.runs}</p>
         </Card>
         <Card className="text-center">
-          <p className="text-xs text-muted">Versions</p>
+          <p className="text-xs text-muted">Versões</p>
           <p className="text-xl font-semibold text-ink mt-1">{agent._count.versions}</p>
         </Card>
         <Card className="text-center">
-          <p className="text-xs text-muted">Model</p>
+          <p className="text-xs text-muted">Modelo</p>
           <p className="text-sm font-medium text-ink mt-1">{agent.model}</p>
         </Card>
       </div>
 
       <Card>
-        <CardTitle>System Prompt</CardTitle>
+        <CardTitle>Prompt do Sistema</CardTitle>
         <pre className="mt-3 text-sm text-body whitespace-pre-wrap font-body bg-canvas rounded-md p-4 border border-hairline">
           {agent.prompt}
         </pre>
       </Card>
 
       <Card>
-        <CardTitle>Configuration</CardTitle>
+        <CardTitle>Configuração</CardTitle>
         <div className="grid grid-cols-2 gap-4 mt-3">
           <div>
-            <p className="text-xs text-muted">Model</p>
+            <p className="text-xs text-muted">Modelo</p>
             <p className="text-sm text-ink">{agent.model}</p>
           </div>
           <div>
-            <p className="text-xs text-muted">Max Tokens</p>
+            <p className="text-xs text-muted">Máximo de Tokens</p>
             <p className="text-sm text-ink">{agent.maxTokens}</p>
           </div>
           <div>
-            <p className="text-xs text-muted">Temperature</p>
+            <p className="text-xs text-muted">Temperatura</p>
             <p className="text-sm text-ink">{agent.temperature}</p>
           </div>
           <div>
-            <p className="text-xs text-muted">Created</p>
+            <p className="text-xs text-muted">Criado em</p>
             <p className="text-sm text-ink">
               {new Date(agent.createdAt).toLocaleDateString("pt-BR")}
             </p>
@@ -87,10 +87,10 @@ export default async function AgentDetailPage({ params }: { params: Promise<{ id
 
       <div className="flex gap-2">
         <Link href={`/runs?agent=${agent.id}`}>
-          <Button>Run Agent</Button>
+          <Button>Executar Agente</Button>
         </Link>
         <Link href="/agents">
-          <Button variant="destructive">Back to Agents</Button>
+          <Button variant="destructive">Voltar aos Agentes</Button>
         </Link>
       </div>
     </div>

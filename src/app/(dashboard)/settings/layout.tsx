@@ -3,7 +3,7 @@ import Link from "next/link";
 const settingsNav = [
   { href: "/settings", label: "Geral" },
   { href: "/settings/profile", label: "Perfil" },
-  { href: "/settings/integrations", label: "Integracoes" },
+  { href: "/settings/integrations", label: "Integrações" },
 ];
 
 export default function SettingsLayout({ children }: { children: React.ReactNode }) {
@@ -11,7 +11,7 @@ export default function SettingsLayout({ children }: { children: React.ReactNode
     <div className="flex gap-6">
       <nav className="w-48 shrink-0">
         <div className="bg-surface-card border border-hairline rounded-lg p-4">
-          <h2 className="text-sm font-semibold text-ink mb-3">Configuracoes</h2>
+          <h2 className="text-sm font-semibold text-ink mb-3">Configurações</h2>
           <div className="space-y-1">
             {settingsNav.map((item) => (
               <Link

@@ -42,8 +42,8 @@ export default function RunsHistoryPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-display font-semibold text-ink">Execution History</h1>
-        <p className="text-sm text-muted mt-1">View all agent run executions</p>
+        <h1 className="text-2xl font-display font-semibold text-ink">Histórico de Execuções</h1>
+        <p className="text-sm text-muted mt-1">Visualize todas as execuções de agentes</p>
       </div>
 
       <div className="flex flex-wrap gap-2">
@@ -57,24 +57,24 @@ export default function RunsHistoryPage() {
                 : "bg-surface-card text-muted hover:bg-surface-strong"
             }`}
           >
-            {f.charAt(0).toUpperCase() + f.slice(1)}
+            {f === "all" ? "Todos" : f === "completed" ? "Concluídos" : f === "running" ? "Em execução" : "Falhos"}
           </button>
         ))}
       </div>
 
       {loading ? (
-        <p className="text-sm text-muted">Loading runs...</p>
+        <p className="text-sm text-muted">Carregando execuções...</p>
       ) : (
         <Card className="p-0 overflow-hidden">
           <Table>
             <TableHeader>
               <TableRow>
-                <TableHead>Agent</TableHead>
+                <TableHead>Agente</TableHead>
                 <TableHead>Status</TableHead>
-                <TableHead>Duration</TableHead>
+                <TableHead>Duração</TableHead>
                 <TableHead>Tokens</TableHead>
-                <TableHead>Model</TableHead>
-                <TableHead>Time</TableHead>
+                <TableHead>Modelo</TableHead>
+                <TableHead>Horário</TableHead>
                 <TableHead></TableHead>
               </TableRow>
             </TableHeader>
@@ -98,7 +98,7 @@ export default function RunsHistoryPage() {
                         size="sm"
                         onClick={() => setExpandedId(expandedId === run.id ? null : run.id)}
                       >
-                        {expandedId === run.id ? "Hide" : "Details"}
+                        {expandedId === run.id ? "Ocultar" : "Detalhes"}
                       </Button>
                     </TableCell>
                   </TableRow>
@@ -107,14 +107,14 @@ export default function RunsHistoryPage() {
                       <TableCell colSpan={7} className="bg-surface-soft">
                         <div className="py-2 space-y-2">
                           <div>
-                            <p className="text-xs font-medium text-muted uppercase">Input</p>
+                            <p className="text-xs font-medium text-muted uppercase">Entrada</p>
                             <pre className="text-sm text-body whitespace-pre-wrap font-mono mt-1">
                               {run.input}
                             </pre>
                           </div>
                           {run.output && (
                             <div>
-                              <p className="text-xs font-medium text-muted uppercase">Output</p>
+                              <p className="text-xs font-medium text-muted uppercase">Saída</p>
                               <pre className="text-sm text-body whitespace-pre-wrap font-mono mt-1">
                                 {run.output}
                               </pre>
@@ -122,7 +122,7 @@ export default function RunsHistoryPage() {
                           )}
                           {run.error && (
                             <div>
-                              <p className="text-xs font-medium text-red-500 uppercase">Error</p>
+                              <p className="text-xs font-medium text-red-500 uppercase">Erro</p>
                               <pre className="text-sm text-red-600 whitespace-pre-wrap font-mono mt-1">
                                 {run.error}
                               </pre>
@@ -149,7 +149,7 @@ export default function RunsHistoryPage() {
               {filtered.length === 0 && (
                 <TableRow>
                   <TableCell colSpan={7} className="text-center text-sm text-muted py-8">
-                    No runs found.
+                    Nenhuma execução encontrada.
                   </TableCell>
                 </TableRow>
               )}

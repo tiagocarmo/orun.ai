@@ -6,7 +6,7 @@ export default function ProfilePage() {
         <p className="text-sm text-muted mt-1">Gerencie seu perfil</p>
       </div>
       <div className="bg-surface-card border border-hairline rounded-lg p-6">
-        <p className="text-sm text-muted">Configuracoes de perfil em breve.</p>
+        <p className="text-sm text-muted">Configurações de perfil em breve.</p>
       </div>
     </div>
   );

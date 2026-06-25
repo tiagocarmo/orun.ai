@@ -60,57 +60,127 @@ Cada agente deve ter:
 * Ações externas sensíveis exigem aprovação humana.
 * Prompts e critérios devem ser versionados e testáveis.
 
-## Contrato de Invocação de Agentes
+## Contrato de Invocação de Agentes (Actor Tool)
 
-Toda chamada para agente, actor tool ou ferramenta delegada deve respeitar exatamente o schema aceito pela ferramenta de destino.
+> **Antes de qualquer chamada de tool: CARREGAR a skill `agent-delegation`.**
+> Ler `.agents/skills/agent-delegation/SKILL.md` antes de usar `actor`, `task` ou `workflow`.
 
-### Regra obrigatória
+Toda chamada para agente via actor tool deve seguir o schema exato abaixo.
 
-* Nunca inferir nomes de campos.
-* Nunca enviar chaves "de conveniência" fora do schema.
-* Validar o tipo de cada campo antes de delegar.
-* Se o schema pedir objeto, nunca enviar string.
-* Se houver dúvida sobre o formato, consultar a definição da ferramenta antes da chamada.
+### Regra de Ouro
 
-### Erro de referência já observado
+**`operation` é SEMPRE um objeto `{}` com campo `action`. Nunca string. Nunca chaves soltas na raiz.**
 
-Erro real ocorrido em delegação:
+Errado:
+```
+task({ operation: "create", summary: "..." })         // ❌ operation é string
+actor({ operation: "run", timeout_ms: 5000 })         // ❌ timeout_ms na raiz
+```
 
-* `operation` foi enviado como `string`, mas a ferramenta esperava `object`
-* `timeout_ms` e `context` foram enviados na raiz, mas não existiam no schema aceito
+Correto:
+```
+task({ operation: { action: "create", summary: "..." } })     // ✅
+actor({ operation: { action: "run", timeout_ms: 5000 } })     // ✅ timeout_ms dentro
+```
 
-### Diretriz operacional
-
-Antes de chamar um agente ou actor tool, o assistente deve montar o payload em três passos:
-
-1. Identificar o schema exato da ferramenta
-2. Montar apenas os campos permitidos
-3. Revisar tipos e chaves extras antes do envio
-
-### Exemplo prático
-
-Formato incorreto:
+### Schema correto — `operation` é sempre um **objeto**
 
 ```json
 {
-  "operation": "run_agent",
-  "timeout_ms": 30000,
-  "context": {
-    "leadId": "123"
+  "operation": {
+    "action": "run",
+    "subagent_type": "explore",
+    "description": "curta descrição 3-5 palavras",
+    "prompt": "instruções completas para o subagente"
   }
 }
 ```
 
-Formato correto: `operation` deve seguir a estrutura de objeto definida pela ferramenta, e qualquer timeout, contexto ou metadado adicional só pode ser enviado se o schema declarar esses campos explicitamente.
+### Campos obrigatórios dentro de `operation`
 
-### Regra de fallback
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| `action` | `"run"` \| `"spawn"` \| `"status"` \| `"wait"` \| `"cancel"` \| `"send"` | Ação a executar |
+| `subagent_type` | `"explore"` \| `"general"` | Tipo do subagente (obrigatório em run/spawn) |
+| `description` | string | Label curta, máx 5 palavras |
+| `prompt` | string | Instruções completas — tratar como se o subagente não tem contexto prévio |
 
-Se a ferramenta rejeitar argumentos por schema inválido, o assistente não deve insistir com novas tentativas por aproximação. Deve:
+### Campos opcionais (dentro de `operation`)
 
-* reler o contrato da ferramenta;
-* corrigir a estrutura;
-* reenviar apenas com chaves reconhecidas;
-* registrar no log que a falha foi de invocação, não de domínio do agente.
+| Campo | Tipo | Descrição |
+|-------|------|-----------|
+| `timeout_ms` | number | Timeout em ms (padrão 600000) |
+| `context` | `"none"` \| `"state"` \| `"full"` | Herança de contexto |
+| `task_id` | string | Vincular a uma task do tracker |
+| `model` | string | Sobrescrever modelo |
+
+### Exemplos de chamadas corretas
+
+**Run (bloqueante):**
+```json
+{
+  "operation": {
+    "action": "run",
+    "subagent_type": "explore",
+    "description": "find error recovery",
+    "prompt": "Search parser.ts for error recovery patterns..."
+  }
+}
+```
+
+**Spawn (background):**
+```json
+{
+  "operation": {
+    "action": "spawn",
+    "subagent_type": "general",
+    "description": "long search task",
+    "prompt": "Analyze the full codebase for..."
+  }
+}
+```
+
+**Status:**
+```json
+{ "operation": { "action": "status", "actor_id": "explore-1" } }
+```
+
+**Wait:**
+```json
+{ "operation": { "action": "wait", "actor_id": "explore-1" } }
+```
+
+### Task Tool — Schema
+
+```json
+{ "operation": { "action": "create", "summary": "Task description" } }
+{ "operation": { "action": "list" } }
+{ "operation": { "action": "get", "id": "T1" } }
+{ "operation": { "action": "start", "id": "T1", "event_summary": "starting" } }
+{ "operation": { "action": "done", "id": "T1", "event_summary": "completed" } }
+{ "operation": { "action": "block", "id": "T1", "event_summary": "waiting" } }
+{ "operation": { "action": "unblock", "id": "T1", "event_summary": "resolved" } }
+{ "operation": { "action": "abandon", "id": "T1", "event_summary": "cancelled" } }
+{ "operation": { "action": "rename", "id": "T1", "summary": "New title" } }
+```
+
+### Erros já observados e como evitar
+
+| Erro | Causa | Correção |
+|------|-------|----------|
+| `expected object, received string` | `operation` enviado como string | Envolver em `{}` com campo `action` |
+| `unrecognized_keys: timeout_ms` | `timeout_ms` no nível raiz | Mover para dentro de `operation` |
+| `unrecognized_keys: summary` | `summary` no nível raiz (task tool) | Mover para dentro de `operation` |
+
+### Regras obrigatórias
+
+1. `operation` é **sempre um objeto** com campo `action` — nunca enviar como string.
+2. `timeout_ms`, `summary`, `event_summary` vão **dentro** de `operation`, nunca na raiz.
+3. `description` é obrigatório — manter com máx 5 palavras.
+4. `prompt` deve conter todas as instruções — o subagente não vê o histórico da conversa.
+5. Usar `run` para resultado bloqueante, `spawn` para background.
+6. Se a ferramenta rejeitar, reler o schema e corrigir — não insistir com aproximações.
+7. **Antes de qualquer chamada de tool: ler `.agents/skills/agent-delegation/SKILL.md`.**
 
 ---
 
@@ -405,6 +475,21 @@ Os seguintes arquivos devem ser carregados em toda sessão do assistente:
 
 ---
 
+## Skills do Projeto
+
+Skills exclusivas deste projeto ficam em `.agents/skills/`:
+
+| Skill | Uso |
+|-------|-----|
+| `tlc-spec-driven` | Planejamento de projetos e features |
+| `agent-delegation` | Invocação correta do actor tool |
+
+Para carregar, ler o `SKILL.md` respectivo:
+- `.agents/skills/tlc-spec-driven/SKILL.md`
+- `.agents/skills/agent-delegation/SKILL.md`
+
+---
+
 ## Regras para IA
 
 * Sempre atualizar os documentos de implantação docs/features/{{NAME}}.md
@@ -420,6 +505,8 @@ Os seguintes arquivos devem ser carregados em toda sessão do assistente:
 
 **Toda tarefa de planejamento DEVE usar a skill `tlc-spec-driven`.**
 
+> Skills do projeto ficam em `.agents/skills/` — não no diretório global de skills.
+
 ### Quando usar
 
 | Cenário | Ação |
@@ -432,7 +519,7 @@ Os seguintes arquivos devem ser carregados em toda sessão do assistente:
 
 ### Como usar
 
-1. **Carregar a skill:** Usar ferramenta `skill` com nome `tlc-spec-driven`
+1. **Carregar a skill:** Ler `.agents/skills/tlc-spec-driven/SKILL.md`
 2. **Avaliar complexidade:** Small (≤3 files) / Medium (<10 tasks) / Large / Complex
 3. **Seguir as fases:** Specify → Design (se necessário) → Tasks (se necessário) → Execute
 4. **Estrutura de arquivos:** Criar em `.specs/features/[nome-da-feature]/`
@@ -466,6 +553,34 @@ Os seguintes arquivos devem ser carregados em toda sessão do assistente:
 
 ---
 
+## Skill Obligatória: agent-delegation
+
+**Antes de QUALQUER chamada de tool que use `operation`: CARREGAR a skill `agent-delegation`.**
+
+> Skills do projeto ficam em `.agents/skills/` — não no diretório global de skills.
+
+### Quando usar
+
+| Cenário | Ação |
+|---------|------|
+| Delegar trabalho a subagente | Ler skill antes de chamar `actor` |
+| Criar ou gerenciar tasks | Ler skill antes de chamar `task` |
+| Rodar workflow | Ler skill antes de chamar `workflow` |
+| Qualquer tool com `operation` | Ler skill primeiro |
+
+### Como usar
+
+1. **Carregar a skill:** Ler `.agents/skills/agent-delegation/SKILL.md`
+2. **Verificar schema:** `operation` é sempre `{}` com `action`
+3. **Chamar a tool:** Seguir o schema documentado na skill
+4. **Se falhar:** Relear a skill, não improvisar
+
+### Gatilhos da skill
+
+A skill é acionada pelas palavras: `tool`, `tools`, `delegate`, `delegation`, `actor`, `subagent`, `sub-agent`, `spawn`, `task`, `workflow`, `run agent`, `invoke`, `chamada`, `ferramenta`.
+
+---
+
 ## Checklist de Conclusão de Tarefa
 
 Ao finalizar qualquer tarefa, o assistente DEVE:
@@ -479,171 +594,6 @@ Ao finalizar qualquer tarefa, o assistente DEVE:
 7. Documentar aprendizados em `.mimocode/learning.md`
 8. Salvar sessão em `.mimocode/session/{{SESSION_ID}}.md`
 9. Criar commit com Conventional Commits
-
-
----
-
-## Modelo de Dados Inicial
-
-### Tabelas recomendadas
-
-* `agents`
-* `agent_versions`
-* `agent_runs`
-* `agent_logs`
-* `leads`
-* `lead_events`
-* `conversations`
-* `messages`
-* `workflows`
-* `workflow_runs`
-* `documents`
-* `document_chunks`
-* `integrations`
-* `scheduled_tasks`
-
----
-
-## Boas Práticas
-
-## Segurança
-
-* Nunca salvar chaves de API no banco
-* Usar variáveis de ambiente para segredos
-* Mascarar dados sensíveis em logs
-* Aplicar controle de acesso por usuário e organização
-
-## Observabilidade
-
-Cada execução de agente deve registrar:
-
-* Agent ID
-* Versão do prompt
-* Entrada resumida
-* Saída resumida
-* Tempo de execução
-* Modelo utilizado
-* Tokens consumidos
-* Status
-* Erro, se houver
-
-## Prompt Engineering
-
-Prompts devem ser:
-
-* Versionados
-* Testáveis
-* Separados por agente
-* Revisáveis por humano
-* Nunca hardcoded diretamente em componentes React
-
-## Banco de Dados
-
-SQLite deve ser usado no MVP pela simplicidade operacional.
-
-Cuidados:
-
-* Usar migrations
-* Evitar acoplamento excessivo ao SQLite
-* Projetar schema com possibilidade futura de migração para PostgreSQL
-* Usar Prisma para abstração
-
----
-
-## Estrutura Recomendada de Pastas
-
-```txt
-/src
-  /app
-    /api
-      /agents
-      /webhooks
-      /workflows
-    /dashboard
-    /leads
-    /settings
-
-  /components
-    /agents
-    /leads
-    /workflows
-    /ui
-
-  /lib
-    /ai
-    /agents
-    /db
-    /mcp
-    /workflows
-    /integrations
-    /observability
-
-  /server
-    /agents
-    /jobs
-    /services
-
-/prisma
-  schema.prisma
-  migrations
-
-/docs
-  agents.md
-  prd.md
-  orchestrator.md
-```
-
----
-
-## Regras de Implementação
-
-* Toda ação de agente deve ser persistida
-* Toda decisão crítica deve ter justificativa
-* Nenhum agente deve executar ação externa sensível sem permissão explícita
-* Todo workflow deve permitir pausa, retomada e cancelamento
-* Integrações externas devem ter tratamento de erro e retry
-* O sistema deve permitir revisão humana antes de ações críticas
-
----
-
-## MVP
-
-O MVP deve conter:
-
-1. Cadastro de agentes
-2. Cadastro de leads
-3. Execução manual de agente
-4. Qualificação simples de lead
-5. Registro de conversas
-6. Histórico de execuções
-7. Dashboard básico
-8. Banco SQLite
-9. Integração inicial com uma API de LLM
-10. Estrutura preparada para MCP
-
----
-
-## Fora do Escopo Inicial
-
-* Marketplace de agentes
-* Treinamento próprio de modelo
-* Multi-tenant avançado
-* Billing
-* Integração nativa com múltiplos CRMs
-* Agentes totalmente autônomos sem revisão humana
-* Migração para banco vetorial dedicado
-
----
-
-## Critérios de Sucesso
-
-* Criar e executar agentes via interface
-* Registrar histórico completo das execuções
-* Qualificar leads automaticamente
-* Permitir intervenção humana
-* Manter dados persistidos em SQLite
-* Ter arquitetura preparada para evolução com MCP
-* Reduzir esforço manual de pré-vendas
 
 ---
 

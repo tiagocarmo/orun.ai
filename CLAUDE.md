@@ -32,7 +32,7 @@ Quando houver divergência, atualizar os documentos canônicos e registrar a dec
 
 **Toda tarefa de planejamento DEVE usar a skill `tlc-spec-driven`.**
 
-- Carregar a skill antes de qualquer planejamento
+- Carregar a skill de `.agents/skills/tlc-spec-driven/SKILL.md` antes de qualquer planejamento
 - Avaliar complexidade (Small/Medium/Large/Complex)
 - Seguir as fases: Specify → Design → Tasks → Execute
 - Criar estrutura em `.specs/features/[nome]/`
@@ -43,6 +43,7 @@ Quando houver divergência, atualizar os documentos canônicos e registrar a dec
 
 Quando houver delegação para agentes, actor tools, MCP tools ou qualquer ferramenta com schema definido:
 
+- Carregar a skill `.agents/skills/agent-delegation/SKILL.md` para referência do schema correto
 - Ler o contrato de entrada antes da chamada
 - Enviar somente chaves reconhecidas pelo schema
 - Conferir tipos antes de delegar

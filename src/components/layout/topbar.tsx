@@ -9,7 +9,7 @@ interface TopbarProps {
 }
 
 const routeTitles: Record<string, string> = {
-  "/": "Dashboard",
+  "/": "Painel",
   "/agents": "Agentes",
   "/agents/new": "Novo Agente",
   "/leads": "Leads",

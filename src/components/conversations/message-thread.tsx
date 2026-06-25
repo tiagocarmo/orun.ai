@@ -14,9 +14,9 @@ interface MessageThreadProps {
 }
 
 const roleConfig: Record<string, { label: string; variant: "info" | "success" | "neutral" }> = {
-  user: { label: "User", variant: "info" },
-  assistant: { label: "Agent", variant: "success" },
-  system: { label: "System", variant: "neutral" },
+  user: { label: "Usuário", variant: "info" },
+  assistant: { label: "Agente", variant: "success" },
+  system: { label: "Sistema", variant: "neutral" },
 };
 
 export function MessageThread({ messages }: MessageThreadProps) {
