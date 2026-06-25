@@ -51,6 +51,14 @@ npm run typecheck
 npm run build
 ```
 
+## Spec Kit
+
+O projeto agora tambem esta preparado para Spec-Driven Development com GitHub Spec Kit em `codex` e `claude`.
+
+- Codex usa skills em `.agents/skills` com comandos como `$speckit-specify`, `$speckit-plan` e `$speckit-implement`.
+- Claude usa skills em `.claude/skills`.
+- A infraestrutura do Spec Kit fica em `.specify/`.
+
 ## Estrutura essencial
 
 ```txt

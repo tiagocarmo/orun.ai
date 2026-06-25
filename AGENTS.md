@@ -64,3 +64,8 @@ Orun.AI is a Next.js + TypeScript test project for an AI workforce platform focu
 - `npm test`, `npm run lint`, `npm run typecheck` and `npm run build` pass when the task changes code or executable behavior.
 - Any new or changed UI help text is updated in `src/lib/help-content.tsx`.
 - `.mimocode/learning.md` remains untouched.
+
+<!-- SPECKIT START -->
+For additional context about technologies to be used, project structure,
+shell commands, and other important information, read the current plan
+<!-- SPECKIT END -->
