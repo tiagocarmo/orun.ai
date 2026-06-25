@@ -87,6 +87,16 @@ export const webhookLeadSchema = z.object({
   metadata: z.record(z.unknown()).optional(),
 });
 
+// Settings schemas
+export const updateSettingSchema = z.object({
+  key: z.string().min(1),
+  value: z.string(),
+});
+
+export const updateSettingsSchema = z.object({
+  entries: z.array(updateSettingSchema).min(1),
+});
+
 // Types inferred from schemas
 export type CreateAgentInput = z.infer<typeof createAgentSchema>;
 export type UpdateAgentInput = z.infer<typeof updateAgentSchema>;

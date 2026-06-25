@@ -82,6 +82,21 @@ export async function getAgent(
   return { success: true, data: agent };
 }
 
+export async function getAgentById(
+  id: string
+): Promise<ApiResponse<AgentWithVersions>> {
+  const agent = await db.agent.findUnique({
+    where: { id },
+    include: { versions: { orderBy: { version: "desc" } } },
+  });
+
+  if (!agent) {
+    return { success: false, error: `Agent '${id}' not found` };
+  }
+
+  return { success: true, data: agent };
+}
+
 export async function updateAgent(
   slug: string,
   input: Record<string, unknown>

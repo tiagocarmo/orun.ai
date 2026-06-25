@@ -65,122 +65,77 @@ Cada agente deve ter:
 > **Antes de qualquer chamada de tool: CARREGAR a skill `agent-delegation`.**
 > Ler `.agents/skills/agent-delegation/SKILL.md` antes de usar `actor`, `task` ou `workflow`.
 
-Toda chamada para agente via actor tool deve seguir o schema exato abaixo.
+### ⛔ Quick Copy — Templates Prontos
 
-### Regra de Ouro
-
-**`operation` é SEMPRE um objeto `{}` com campo `action`. Nunca string. Nunca chaves soltas na raiz.**
-
-Errado:
-```
-task({ operation: "create", summary: "..." })         // ❌ operation é string
-actor({ operation: "run", timeout_ms: 5000 })         // ❌ timeout_ms na raiz
-```
-
-Correto:
-```
-task({ operation: { action: "create", summary: "..." } })     // ✅
-actor({ operation: { action: "run", timeout_ms: 5000 } })     // ✅ timeout_ms dentro
-```
-
-### Schema correto — `operation` é sempre um **objeto**
-
+**actor — Run (bloqueante):**
 ```json
-{
-  "operation": {
-    "action": "run",
-    "subagent_type": "explore",
-    "description": "curta descrição 3-5 palavras",
-    "prompt": "instruções completas para o subagente"
-  }
-}
+{ "operation": { "action": "run", "subagent_type": "explore", "description": "find errors", "prompt": "Search for..." } }
 ```
 
-### Campos obrigatórios dentro de `operation`
-
-| Campo | Tipo | Descrição |
-|-------|------|-----------|
-| `action` | `"run"` \| `"spawn"` \| `"status"` \| `"wait"` \| `"cancel"` \| `"send"` | Ação a executar |
-| `subagent_type` | `"explore"` \| `"general"` | Tipo do subagente (obrigatório em run/spawn) |
-| `description` | string | Label curta, máx 5 palavras |
-| `prompt` | string | Instruções completas — tratar como se o subagente não tem contexto prévio |
-
-### Campos opcionais (dentro de `operation`)
-
-| Campo | Tipo | Descrição |
-|-------|------|-----------|
-| `timeout_ms` | number | Timeout em ms (padrão 600000) |
-| `context` | `"none"` \| `"state"` \| `"full"` | Herança de contexto |
-| `task_id` | string | Vincular a uma task do tracker |
-| `model` | string | Sobrescrever modelo |
-
-### Exemplos de chamadas corretas
-
-**Run (bloqueante):**
+**actor — Run com timeout:**
 ```json
-{
-  "operation": {
-    "action": "run",
-    "subagent_type": "explore",
-    "description": "find error recovery",
-    "prompt": "Search parser.ts for error recovery patterns..."
-  }
-}
+{ "operation": { "action": "run", "subagent_type": "explore", "description": "deep analysis", "prompt": "Analyze...", "timeout_ms": 300000 } }
 ```
 
-**Spawn (background):**
+**actor — Spawn (background):**
 ```json
-{
-  "operation": {
-    "action": "spawn",
-    "subagent_type": "general",
-    "description": "long search task",
-    "prompt": "Analyze the full codebase for..."
-  }
-}
+{ "operation": { "action": "spawn", "subagent_type": "general", "description": "long task", "prompt": "Analyze..." } }
 ```
 
-**Status:**
+**actor — Status / Wait / Cancel:**
 ```json
 { "operation": { "action": "status", "actor_id": "explore-1" } }
-```
-
-**Wait:**
-```json
 { "operation": { "action": "wait", "actor_id": "explore-1" } }
+{ "operation": { "action": "cancel", "actor_id": "explore-1" } }
 ```
 
-### Task Tool — Schema
-
+**task — Create:**
 ```json
 { "operation": { "action": "create", "summary": "Task description" } }
-{ "operation": { "action": "list" } }
-{ "operation": { "action": "get", "id": "T1" } }
+```
+
+**task — Start / Done / Block / Unblock:**
+```json
 { "operation": { "action": "start", "id": "T1", "event_summary": "starting" } }
 { "operation": { "action": "done", "id": "T1", "event_summary": "completed" } }
 { "operation": { "action": "block", "id": "T1", "event_summary": "waiting" } }
 { "operation": { "action": "unblock", "id": "T1", "event_summary": "resolved" } }
-{ "operation": { "action": "abandon", "id": "T1", "event_summary": "cancelled" } }
-{ "operation": { "action": "rename", "id": "T1", "summary": "New title" } }
 ```
 
-### Erros já observados e como evitar
+### ⛔ BLOQUEIO — REGRA DE OURO
+
+**`operation` é SEMPRE um objeto `{}` com campo `action`. NUNCA string.**
+
+Errado:
+```
+actor({ operation: "run", subagent_type: "explore" })          // ❌ operation é string
+actor({ operation: "run", timeout_ms: 5000 })                  // ❌ timeout_ms na raiz
+task({ operation: "create", summary: "..." })                  // ❌ operation é string
+```
+
+Correto:
+```
+actor({ operation: { action: "run", subagent_type: "explore" } })                    // ✅
+actor({ operation: { action: "run", timeout_ms: 5000 } })                            // ✅ timeout dentro
+task({ operation: { action: "create", summary: "..." } })                             // ✅
+```
+
+### Regras obrigatórias
+
+1. `operation` é **sempre um objeto** com campo `action` — nunca string.
+2. `timeout_ms`, `summary`, `id`, `event_summary` vão **dentro** de `operation`, nunca na raiz.
+3. Para `actor` run/spawn: `subagent_type`, `description` (≤5 palavras) e `prompt` são obrigatórios dentro de `operation`.
+4. `prompt` deve ser completo — o subagente não vê o histórico da conversa.
+5. Usar `run` para resultado bloqueante, `spawn` para background.
+6. **Antes de qualquer chamada: ler `.agents/skills/agent-delegation/SKILL.md`.**
+
+### Erros conhecidos
 
 | Erro | Causa | Correção |
 |------|-------|----------|
 | `expected object, received string` | `operation` enviado como string | Envolver em `{}` com campo `action` |
 | `unrecognized_keys: timeout_ms` | `timeout_ms` no nível raiz | Mover para dentro de `operation` |
-| `unrecognized_keys: summary` | `summary` no nível raiz (task tool) | Mover para dentro de `operation` |
-
-### Regras obrigatórias
-
-1. `operation` é **sempre um objeto** com campo `action` — nunca enviar como string.
-2. `timeout_ms`, `summary`, `event_summary` vão **dentro** de `operation`, nunca na raiz.
-3. `description` é obrigatório — manter com máx 5 palavras.
-4. `prompt` deve conter todas as instruções — o subagente não vê o histórico da conversa.
-5. Usar `run` para resultado bloqueante, `spawn` para background.
-6. Se a ferramenta rejeitar, reler o schema e corrigir — não insistir com aproximações.
-7. **Antes de qualquer chamada de tool: ler `.agents/skills/agent-delegation/SKILL.md`.**
+| `unrecognized_keys: summary` | `summary` no nível raiz | Mover para dentro de `operation` |
 
 ---
 
@@ -498,6 +453,7 @@ Para carregar, ler o `SKILL.md` respectivo:
 * Sempre atualizar o readme.
 * Toda tarefa deve ser versionada usando Semantic Versioning 2.0.0, https://semver.org/
 * Commits devem ser feitos usando Conventional Commits, https://www.conventionalcommits.org/en/v1.0.0/
+* Ao criar ou modificar uma tela, **incluir ou atualizar** o conteúdo de ajuda em `src/lib/help-content.ts`
 
 ---
 

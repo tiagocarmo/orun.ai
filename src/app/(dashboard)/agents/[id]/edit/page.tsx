@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { Card, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { getAgent, updateAgent } from "@/app/actions/agents";
+import { getAgentById, updateAgent } from "@/app/actions/agents";
 
 export default function EditAgentPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
@@ -27,7 +27,7 @@ export default function EditAgentPage({ params }: { params: Promise<{ id: string
   useEffect(() => {
     async function load() {
       const { id } = await params;
-      const result = await getAgent(id);
+      const result = await getAgentById(id);
       if (result.success) {
         const agent = result.data;
         setSlug(agent.slug);

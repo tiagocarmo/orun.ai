@@ -41,36 +41,56 @@ Quando houver divergência, atualizar os documentos canônicos e registrar a dec
 
 ## Guardrails Para Chamada de Agentes e Tools
 
-Quando houver delegação para agentes, actor tools, MCP tools ou qualquer ferramenta com schema definido:
+> **Antes de qualquer chamada de tool: CARREGAR a skill `agent-delegation`.**
 
-- Carregar a skill `.agents/skills/agent-delegation/SKILL.md` para referência do schema correto
-- Ler o contrato de entrada antes da chamada
-- Enviar somente chaves reconhecidas pelo schema
-- Conferir tipos antes de delegar
-- Não promover campos auxiliares para a raiz do payload sem suporte explícito
-- Tratar `context`, `timeout_ms`, `metadata` e similares como suspeitos até confirmação no schema
+### ⛔ Quick Copy — Templates Prontos
 
-### Regra prática obrigatória
+**actor — Run:**
+```json
+{ "operation": { "action": "run", "subagent_type": "explore", "description": "find errors", "prompt": "Search for..." } }
+```
 
-Se um campo como `operation` existir, ele deve ser enviado exatamente no tipo esperado pela ferramenta. Se o schema pedir `object`, enviar string é erro de invocação e deve ser corrigido antes da execução.
+**actor — Run com timeout:**
+```json
+{ "operation": { "action": "run", "subagent_type": "explore", "description": "deep analysis", "prompt": "Analyze...", "timeout_ms": 300000 } }
+```
 
-### Checklist antes de delegar
+**task — Create:**
+```json
+{ "operation": { "action": "create", "summary": "Task description" } }
+```
 
-1. O nome de cada chave existe no schema?
-2. O tipo de cada valor confere com o schema?
-3. Há chaves extras na raiz do payload?
-4. O payload representa a operação real sem wrappers inventados?
+### ⛔ REGRA DE OURO
 
-Se qualquer resposta for "não", corrigir antes da chamada.
+**`operation` é SEMPRE um objeto `{}` com campo `action`. NUNCA string.**
 
-### Interpretação do erro já ocorrido
+Errado:
+```
+actor({ operation: "run", subagent_type: "explore" })          // ❌ operation é string
+actor({ operation: "run", timeout_ms: 5000 })                  // ❌ timeout_ms na raiz
+task({ operation: "create", summary: "..." })                  // ❌ operation é string
+```
 
-O erro abaixo deve ser tratado como falha de montagem do payload:
+Correto:
+```
+actor({ operation: { action: "run", subagent_type: "explore" } })                    // ✅
+actor({ operation: { action: "run", timeout_ms: 5000 } })                            // ✅ timeout dentro
+task({ operation: { action: "create", summary: "..." } })                             // ✅
+```
 
-- `operation`: esperado `object`, recebido `string`
-- `timeout_ms` e `context`: chaves não reconhecidas
+### Checklist obrigatório antes de QUALQUER chamada de tool
 
-Conclusão obrigatória: não reenviar por tentativa e erro. Reconsultar o schema e reconstruir a chamada.
+1. `operation` é um **objeto** `{}` com campo `action`? → SIM, sempre
+2. Todos os campos extras estão **dentro** de `operation`? → timeout_ms, summary, id, etc.
+3. Li a skill `.agents/skills/agent-delegation/SKILL.md`? → Ler antes de cada chamada
+
+### Em caso de erro: NÃO RETENTAR
+
+Se receber `expected object, received string`:
+1. **PARE** — Não tente novamente com o mesmo formato
+2. **LEIA** a skill `agent-delegation`
+3. **CORRIJA** o formato: `operation` deve ser `{ action: "...", ... }`
+4. **RETENTE** com o formato corrigido
 
 ---
 
@@ -138,6 +158,43 @@ Atualizar `package.json` version quando aplicável.
 - Atualizar `README.md` quando mudar funcionalidades
 - Criar/atualizar `docs/features/{NOME}.md` para features novas
 - Manter documentação de API atualizada
+
+---
+
+## Ajuda das Telas
+
+Toda tela do dashboard deve ter conteúdo de ajuda acessível pelo botão `?` no topbar.
+
+### Regra
+
+Ao criar ou modificar uma tela, **incluir ou atualizar** o conteúdo de ajuda em `src/lib/help-content.ts`.
+
+### Formato do conteúdo
+
+```typescript
+"/rota-da-tela": {
+  title: "Nome da Tela",
+  content: (
+    <div className="space-y-3">
+      <h3 className="font-medium text-ink">O que é</h3>
+      <p className="text-muted">Descrição da funcionalidade da tela.</p>
+      <h3 className="font-medium text-ink">Como usar</h3>
+      <ul className="list-disc list-inside space-y-1 text-muted">
+        <li>Instrução 1</li>
+        <li>Instrução 2</li>
+        <li>Instrução 3</li>
+      </ul>
+    </div>
+  ),
+},
+```
+
+### Checklist
+
+- [ ] Conteúdo adicionado ou atualizado em `src/lib/help-content.ts`
+- [ ] Seção "O que é" com 1-2 frases explicando a tela
+- [ ] Seção "Como usar" com 3-5 bullets de instruções
+- [ ] Testar: botão `?` aparece e modal abre com conteúdo correto
 
 ---
 

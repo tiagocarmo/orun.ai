@@ -2,6 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { Breadcrumb } from "@/components/ui/breadcrumb";
+import { HelpButton } from "@/components/ui/help-button";
 
 interface TopbarProps {
   onMenuToggle: () => void;
@@ -74,6 +75,8 @@ export function Topbar({ onMenuToggle, onSearchOpen }: TopbarProps) {
             </kbd>
           </button>
         )}
+
+        <HelpButton />
 
         <button
           type="button"

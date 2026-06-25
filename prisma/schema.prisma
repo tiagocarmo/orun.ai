@@ -194,3 +194,15 @@ model ScheduledTask {
   executedAt  DateTime?
   createdAt   DateTime  @default(now())
 }
+
+model Setting {
+  id        String   @id @default(cuid())
+  key       String   @unique
+  value     String
+  type      String   @default("text")
+  group     String
+  label     String
+  helpText  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

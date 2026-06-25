@@ -143,6 +143,32 @@ Sugira a próxima ação.`,
     },
   });
 
+  // Create default settings
+  const defaultSettings = [
+    { key: "platform.name", value: "Orun.AI", type: "text", group: "general", label: "Nome da Plataforma", helpText: "Nome exibido na interface" },
+    { key: "platform.language", value: "pt-BR", type: "text", group: "general", label: "Idioma Padrão", helpText: "Idioma da interface" },
+    { key: "platform.timezone", value: "America/Sao_Paulo", type: "text", group: "general", label: "Timezone", helpText: "Fuso horário padrão" },
+    { key: "platform.app_url", value: "http://localhost:3000", type: "text", group: "general", label: "URL da Plataforma", helpText: "URL de exibição (não afeta a rota real)" },
+    { key: "agents.default_model", value: "gpt-4o", type: "text", group: "agents", label: "Modelo Padrão", helpText: "Modelo LLM para novos agentes" },
+    { key: "agents.default_temperature", value: "0.7", type: "number", group: "agents", label: "Temperatura Padrão", helpText: "Criatividade do modelo (0.0 a 2.0)" },
+    { key: "agents.default_max_tokens", value: "4096", type: "number", group: "agents", label: "Max Tokens Padrão", helpText: "Limite de tokens na resposta" },
+    { key: "leads.qualification_threshold", value: "70", type: "number", group: "leads", label: "Threshold de Qualificação", helpText: "Score mínimo para marcar lead como qualificado" },
+    { key: "leads.auto_qualify", value: "false", type: "boolean", group: "leads", label: "Auto-Qualificação", helpText: "Habilitar qualificação automática de leads" },
+    { key: "leads.max_per_page", value: "20", type: "number", group: "leads", label: "Leads por Página", helpText: "Quantidade máxima de leads exibidos por página" },
+    { key: "profile.name", value: "", type: "text", group: "profile", label: "Nome", helpText: "Seu nome de exibição" },
+    { key: "profile.email", value: "", type: "text", group: "profile", label: "Email", helpText: "Seu email de contato" },
+    { key: "profile.role", value: "admin", type: "text", group: "profile", label: "Papel", helpText: "Seu papel na plataforma (admin/viewer)" },
+    { key: "profile.email_notifications", value: "true", type: "boolean", group: "profile", label: "Notificações por Email", helpText: "Receber notificações importantes por email" },
+  ];
+
+  for (const setting of defaultSettings) {
+    await prisma.setting.upsert({
+      where: { key: setting.key },
+      update: {},
+      create: setting,
+    });
+  }
+
   console.log("Seed completed successfully!");
 }
 

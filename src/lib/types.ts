@@ -13,6 +13,7 @@ import type {
   DocumentChunk,
   Integration,
   ScheduledTask,
+  Setting,
 } from "@prisma/client";
 
 // Re-export Prisma types
@@ -31,6 +32,7 @@ export type {
   DocumentChunk,
   Integration,
   ScheduledTask,
+  Setting,
 };
 
 // API Response types
