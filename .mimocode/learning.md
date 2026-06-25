@@ -559,3 +559,10 @@ Começar com dados mock no WS-C e substituir por Prisma queries na integração 
 - Causava ReferenceError em runtime e erro de tipo no build
 - Correção: remover o underscore do parâmetro
 - Lição: parâmetros com underscore prefix indicam "intencionalmente não usado", mas se o código os usa, o underscore deve ser removido
+
+### Falhas de delegacao devem ser tratadas como erro de schema primeiro
+
+- Se uma tool reclamar `expected object, received string`, a primeira leitura deve ser "payload mal montado", nao "agente falhou"
+- Campos auxiliares como `timeout_ms`, `context` e `metadata` nao devem ser enviados por intuicao; so entram se o schema aceitar explicitamente
+- Antes de delegar, vale checar duas coisas: chaves permitidas e tipo de cada campo
+- Reenviar por tentativa e erro piora a rastreabilidade; o correto e reler o contrato e reconstruir a chamada

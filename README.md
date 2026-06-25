@@ -166,3 +166,4 @@ src/
 
 - Codex VS Code extension: plugins locais do Codex precisam respeitar os limites do manifesto. Em `interface.defaultPrompt`, cada prompt deve ter no máximo 128 caracteres para evitar warnings na inicialização do `codex app-server`.
 - Codex VS Code extension: o warning IPC `client-status-changed` foi corrigido com patch local no bundle instalado da extensão; ao atualizar/reinstalar a extensão, reaplicar ou remover o patch conforme a versão oficial.
+- Chamadas delegadas para agentes/tools: se a ferramenta recusar argumentos com mensagens como `expected object, received string` ou `unrecognized keys`, trate isso como erro de schema do payload. Releia o contrato da ferramenta, remova chaves extras e confirme os tipos antes de reenviar. Não use tentativa e erro com campos inventados como `timeout_ms` ou `context` na raiz sem suporte explícito.

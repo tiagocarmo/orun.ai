@@ -39,6 +39,40 @@ Quando houver divergência, atualizar os documentos canônicos e registrar a dec
 
 ---
 
+## Guardrails Para Chamada de Agentes e Tools
+
+Quando houver delegação para agentes, actor tools, MCP tools ou qualquer ferramenta com schema definido:
+
+- Ler o contrato de entrada antes da chamada
+- Enviar somente chaves reconhecidas pelo schema
+- Conferir tipos antes de delegar
+- Não promover campos auxiliares para a raiz do payload sem suporte explícito
+- Tratar `context`, `timeout_ms`, `metadata` e similares como suspeitos até confirmação no schema
+
+### Regra prática obrigatória
+
+Se um campo como `operation` existir, ele deve ser enviado exatamente no tipo esperado pela ferramenta. Se o schema pedir `object`, enviar string é erro de invocação e deve ser corrigido antes da execução.
+
+### Checklist antes de delegar
+
+1. O nome de cada chave existe no schema?
+2. O tipo de cada valor confere com o schema?
+3. Há chaves extras na raiz do payload?
+4. O payload representa a operação real sem wrappers inventados?
+
+Se qualquer resposta for "não", corrigir antes da chamada.
+
+### Interpretação do erro já ocorrido
+
+O erro abaixo deve ser tratado como falha de montagem do payload:
+
+- `operation`: esperado `object`, recebido `string`
+- `timeout_ms` e `context`: chaves não reconhecidas
+
+Conclusão obrigatória: não reenviar por tentativa e erro. Reconsultar o schema e reconstruir a chamada.
+
+---
+
 ## Finalização de Toda Tarefa
 
 Ao concluir qualquer tarefa, obrigatoriamente:

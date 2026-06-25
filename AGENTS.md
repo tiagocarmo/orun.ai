@@ -60,6 +60,58 @@ Cada agente deve ter:
 * Ações externas sensíveis exigem aprovação humana.
 * Prompts e critérios devem ser versionados e testáveis.
 
+## Contrato de Invocação de Agentes
+
+Toda chamada para agente, actor tool ou ferramenta delegada deve respeitar exatamente o schema aceito pela ferramenta de destino.
+
+### Regra obrigatória
+
+* Nunca inferir nomes de campos.
+* Nunca enviar chaves "de conveniência" fora do schema.
+* Validar o tipo de cada campo antes de delegar.
+* Se o schema pedir objeto, nunca enviar string.
+* Se houver dúvida sobre o formato, consultar a definição da ferramenta antes da chamada.
+
+### Erro de referência já observado
+
+Erro real ocorrido em delegação:
+
+* `operation` foi enviado como `string`, mas a ferramenta esperava `object`
+* `timeout_ms` e `context` foram enviados na raiz, mas não existiam no schema aceito
+
+### Diretriz operacional
+
+Antes de chamar um agente ou actor tool, o assistente deve montar o payload em três passos:
+
+1. Identificar o schema exato da ferramenta
+2. Montar apenas os campos permitidos
+3. Revisar tipos e chaves extras antes do envio
+
+### Exemplo prático
+
+Formato incorreto:
+
+```json
+{
+  "operation": "run_agent",
+  "timeout_ms": 30000,
+  "context": {
+    "leadId": "123"
+  }
+}
+```
+
+Formato correto: `operation` deve seguir a estrutura de objeto definida pela ferramenta, e qualquer timeout, contexto ou metadado adicional só pode ser enviado se o schema declarar esses campos explicitamente.
+
+### Regra de fallback
+
+Se a ferramenta rejeitar argumentos por schema inválido, o assistente não deve insistir com novas tentativas por aproximação. Deve:
+
+* reler o contrato da ferramenta;
+* corrigir a estrutura;
+* reenviar apenas com chaves reconhecidas;
+* registrar no log que a falha foi de invocação, não de domínio do agente.
+
 ---
 
 ## Agentes Principais
