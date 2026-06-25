@@ -1,169 +1,74 @@
-# Orun.AI Workforce Platform
+# Orun.AI
 
-Plataforma para criação, configuração e execução de agentes de IA especializados.
+Plataforma experimental de AI workforce para operacoes comerciais. O produto combina agentes especializados, workflows auditaveis, integracoes MCP e uma interface Next.js para operar leads, conversas, execucoes e configuracoes.
 
----
+## O que existe hoje
 
-## Origem e Contexto
+- Dashboard com metricas de leads, agentes, workflows e atividade recente.
+- Cadastro e acompanhamento de leads com eventos, score e historico.
+- Conversas vinculadas a leads.
+- Execucao manual e historico de runs de agentes.
+- Workflow engine com execucao sequencial, pausa, retomada e cancelamento.
+- Orchestrator que planeja, executa e consolida tarefas entre agentes.
+- Integracoes MCP, configuracoes, auth, RBAC, mascaramento de PII e governanca.
 
-O Orun.AI nasceu de uma investigação conversacional consolidada nesta documentação base.
-Primeiro, o projeto buscou um nome inspirado em culturas afro-brasileiras e iorubás associado a sabedoria, visão, caminhos e interpretação. A escolha foi **Orun.AI**, conectada ao conceito de Orun/Orunmilá/Ifá como símbolo de conhecimento profundo, leitura de contexto e orientação.
+## Agentes implementados
 
-Essa inspiração deve ser usada com respeito: Orun.AI não é um produto religioso, nem deve apropriar ritos, símbolos sagrados ou prometer adivinhação. O significado de marca é metafórico e institucional: **ver além do óbvio, entender contexto e orientar decisões com responsabilidade**.
-
-Depois, a ideia evoluiu de um site institucional de IA para uma plataforma de **AI Workforce**: equipes digitais compostas por agentes especializados, coordenadas por workflows auditáveis e integradas a ferramentas externas por MCP.
-
-## Visão Geral
-
-- Agent Builder
-- MCP Server Builder
-- Workflow Builder
-- Knowledge Builder
-- Multi-Agent Orchestrator
-- Analytics & Observability
-
-## Estado Atual do MVP
-
-- Execucao manual do fluxo `lead -> qualification` usa `leadId` valido.
-- A tela de lead permite abrir a execucao manual com o lead preselecionado.
-- Arquivar e desarquivar leads preserva o ultimo status ativo conhecido.
-- O webhook de leads passa a registrar `AgentRun` e `AgentLog` pela pipeline padrao.
-- Workflow Engine funcional com execucao sequencial, pausa, retomada e cancelamento.
-- Orchestrator core com planejamento, delegacao e consolidacao de resultados.
-- MCP tools executaveis com calendar e document stubs, retry e audit logs.
-- Equipe digital comercial completa: scheduling, follow-up, research, document, human-handoff.
-- Autenticacao via API key e session tokens HMAC-SHA256.
-- RBAC com tres roles (admin, operator, viewer) e 20 permissoes granulares.
-- Mascaramento de PII (nome, email, telefone) com estrategias full/partial/hash/redact.
-- Controles de governanca: limites de acao por hora/dia e fluxo de aprovacao para acoes sensiveis.
-- Politica de secrets: validacao de referencias, mascaramento em logs.
-- Dashboard metrics: leads por status, runs de agentes, workflows, conversas.
-
-## Tese do Produto
-
-O foco inicial é automação comercial: captar leads, qualificar oportunidades, enriquecer contexto, agendar reuniões, fazer follow-up, gerar documentos e manter histórico auditável. O objetivo de longo prazo é permitir que empresas criem e operem times de agentes confiáveis, especializados e supervisionáveis.
-
-Pilares:
-- **Especialização:** cada agente tem uma responsabilidade clara.
-- **Orquestração:** workflows coordenam agentes, humanos e integrações.
-- **Auditabilidade:** ações, decisões, entradas e saídas relevantes ficam registradas.
-- **Human-in-the-loop:** ações sensíveis exigem revisão humana.
-- **MCP-first:** integrações externas devem evoluir por contratos padronizados.
-- **JavaScript/TypeScript-first:** a base técnica prioriza o ecossistema JS/TS.
+- Lead Intake
+- Qualification
+- Scheduling
+- Follow-up
+- Research
+- Document
+- Human Handoff
 
 ## Stack
 
-- **Framework:** Next.js 15
-- **Linguagem:** TypeScript
-- **Banco:** SQLite + Prisma ORM
-- **UI:** React + Tailwind CSS v4
-- **Testes:** Vitest
-- **IA:** APIs externas de LLM (OpenAI)
-- **Protocolo:** MCP — Model Context Protocol
+- Next.js 15
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- Prisma
+- SQLite
+- Vitest
 
-## Como Rodar
+## Como rodar
 
 ```bash
-# Instalar dependências
 npm install
-
-# Aplicar migrations locais
+npm run db:generate
 npm run db:migrate
-
-# Popular dados de exemplo
-npx prisma db seed
-
-# Iniciar desenvolvimento
+npm run db:seed
 npm run dev
+```
 
-# Rodar testes
+## Comandos principais
+
+```bash
 npm test
-
-# Lint e typecheck
 npm run lint
 npm run typecheck
-
-# Build de produção
 npm run build
 ```
 
-## Persistencia do MVP
+## Estrutura essencial
 
-- Leads agora usam `externalId` em coluna dedicada para deduplicacao auditavel.
-- Exclusao de lead e soft delete com `deletedAt`; o historico continua preservado.
-- Credenciais de integracoes nao devem ir para o banco: use `secretRef` apontando para `env:` ou outro secret manager.
-- Campos JSON polimorficos continuam serializados em `String` no SQLite por limitacao do Prisma com esse provider; a estrategia de migracao para PostgreSQL esta documentada em `docs/features/data-and-persistence.md`.
-
-## Qualidade
-
-- Testes automatizados usam `Vitest`.
-- Mocks reutilizaveis de banco e runtime de agentes ficam em `src/test/mocks/`.
-- `npm run lint` usa `eslint .` com exclusao de artefatos gerados.
-- `npm run typecheck` executa `next typegen` antes do `tsc --noEmit` para evitar falhas em workspace limpo.
-
-## Convenções
-
-### Autoload
-
-Os seguintes arquivos são carregados automaticamente pelo assistente:
-- `CLAUDE.md` — regras de código, commits, versioning
-- `AGENTS.md` — especificação do projeto, agentes, modelo de dados
-- `README.md` — este arquivo, visão geral e convenções
-
-### Commits
-
-Usar **Conventional Commits:** `feat(scope): descrição`
-
-Tipos: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `chore`, `perf`, `ci`, `build`
-
-### Versioning
-
-Usar **Semantic Versioning 2.0.0:** `MAJOR.MINOR.PATCH`
-
-Atualizar `package.json` version a cada tarefa concluída.
-
-### Checklist de Conclusão
-
-Ao finalizar qualquer tarefa:
-1. Rodar testes (`npm test`)
-2. Rodar build (`npm run build`)
-3. Rodar lint (`npm run lint`)
-4. Rodar typecheck (`npm run typecheck`)
-5. Validar página inicial (quando aplicável)
-6. Versionar (semver)
-7. Documentar aprendizados (`.mimocode/learning.md`)
-8. Salvar sessão (`.mimocode/session/`)
-9. Commit (conventional commits)
-
-## Estrutura
-
-```
-src/
-├── app/              # Rotas Next.js
-├── components/       # Componentes React
-├── lib/              # Lógica de negócio
-└── prisma/           # Schema e migrations
+```txt
+src/app           rotas e server actions
+src/components    UI e telas
+src/lib           agentes, workflows, orchestrator, seguranca e utilitarios
+prisma            schema, migrations e seed
 ```
 
-## Documentação
+## Documentacao canonica
 
-- `AGENTS.md` — especificação completa dos agentes
-- `docs/prd.md` — requisitos de produto e visão evolutiva
-- `docs/workflows.md` — workflows oficiais da jornada comercial e operacional
-- `docs/orchestrator.md` — coordenação entre agentes, contexto, MCP e governança
-- `DESIGN.md` — identidade visual e princípios de experiência
-- `docs/plans/sequential-build/` — plano canônico de construção sequencial, com um `.md` por ponto
-- `docs/features/` — documentação por feature
-- `docs/features/stabilize-mvp.md` — estabilização do primeiro ponto do plano sequencial
-- `docs/features/tests-and-quality.md` — primeira camada real de testes e revisão dos gates de qualidade
-- `docs/features/data-and-persistence.md` — endurecimento de schema, migrations e politicas de persistencia do MVP
-- `docs/features/operations-and-security.md` — auth, mascaramento de PII, governanca, RBAC e metricas do dashboard
-- `docs/codex-report/` — auditoria Codex de requisitos, implementação real e lacunas
-- `.mimocode/learning.md` — aprendizados do projeto
-- `.mimocode/session/` — histórico de sessões
+- `README.md`: visao geral e operacao local.
+- `prd.md`: documento de produto e escopo do MVP.
+- `AGENTS.md`: instrucoes canonicas para agentes de codigo.
+- `CLAUDE.md`: ponte curta para `AGENTS.md`.
+- `DESIGN.md`: identidade visual em formato compativel com Google Stitch.
+- `llms.txt`: indice enxuto para consumidores LLM.
 
-## Troubleshooting
+## Estado do repositorio
 
-- Codex VS Code extension: plugins locais do Codex precisam respeitar os limites do manifesto. Em `interface.defaultPrompt`, cada prompt deve ter no máximo 128 caracteres para evitar warnings na inicialização do `codex app-server`.
-- Codex VS Code extension: o warning IPC `client-status-changed` foi corrigido com patch local no bundle instalado da extensão; ao atualizar/reinstalar a extensão, reaplicar ou remover o patch conforme a versão oficial.
-- Chamadas delegadas para agentes/tools: se a ferramenta recusar argumentos com mensagens como `expected object, received string` ou `unrecognized keys`, trate isso como erro de schema do payload. Releia o contrato da ferramenta, remova chaves extras e confirme os tipos antes de reenviar. Não use tentativa e erro com campos inventados como `timeout_ms` ou `context` na raiz sem suporte explícito.
+Este repositorio foi consolidado para manter apenas a documentacao canonica e `.mimocode/learning.md` como memoria historica preservada.

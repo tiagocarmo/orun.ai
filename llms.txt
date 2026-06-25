@@ -1,0 +1,20 @@
+# Orun.AI
+
+> Orun.AI is a Next.js test project for an AI workforce platform focused on commercial operations, specialized agents, auditable workflows and MCP-based integrations.
+
+The repository has been intentionally reduced to a small canonical documentation set. Treat the codebase as the source of truth for implemented behavior and use the files below according to their roles.
+
+## Core Docs
+
+- [README.md](./README.md): Human-facing overview, current capabilities, stack and local setup.
+- [prd.md](./prd.md): Product requirements, users, scope and non-goals for the MVP.
+- [AGENTS.md](./AGENTS.md): Canonical instructions for coding agents working in this repository.
+- [DESIGN.md](./DESIGN.md): Visual identity and design-system rules in a Google Stitch compatible format.
+
+## Historical Context
+
+- [.mimocode/learning.md](./.mimocode/learning.md): Preserved project memory; read-only historical learning log.
+
+## Optional
+
+- [CLAUDE.md](./CLAUDE.md): Thin wrapper that points Claude-compatible tooling back to `AGENTS.md`.

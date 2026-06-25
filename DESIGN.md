@@ -1,215 +1,175 @@
-# DESIGN.md — Orun.AI
-
-## Origem da Identidade
-
-A identidade visual do Orun.AI deriva do chat original consolidado nos documentos base.
-
-O nome **Orun.AI** foi escolhido por sua associação simbólica com Orun/Orunmilá/Ifá: sabedoria, visão, leitura de caminhos e orientação. A marca usa essa inspiração de forma respeitosa e metafórica, sem representar culto religioso, promessa espiritual ou adivinhação literal.
-
-O conceito institucional selecionado foi:
-
-> Visão além do tempo. Inteligência além do óbvio.
-
-A direção visual escolhida no chat foi a primeira opção de logo: **visão cósmica**, com um olho abstrato, atmosfera de céu profundo e detalhes dourados. Ela comunica inteligência, profundidade, confiança e leitura estratégica.
-
+---
+version: alpha
+name: Orun.AI
+description: Visual identity for an operational AI workforce platform with premium institutional cues and dense, trustworthy product surfaces.
+colors:
+  primary: "#0C0F1C"
+  secondary: "#3A4055"
+  tertiary: "#C7A347"
+  neutral: "#EEF1F6"
+  text-primary: "#111827"
+  text-inverse: "#F5F5F5"
+  success: "#22C55E"
+  warning: "#F59E0B"
+  error: "#EF4444"
+typography:
+  h1:
+    fontFamily: "Cormorant Garamond"
+    fontSize: 2.5rem
+    fontWeight: 600
+    lineHeight: 1.1
+    letterSpacing: "0.02em"
+  h2:
+    fontFamily: "Cormorant Garamond"
+    fontSize: 2rem
+    fontWeight: 600
+    lineHeight: 1.15
+    letterSpacing: "0.01em"
+  body-md:
+    fontFamily: "Inter"
+    fontSize: 1rem
+    fontWeight: 400
+    lineHeight: 1.6
+  body-sm:
+    fontFamily: "Inter"
+    fontSize: 0.875rem
+    fontWeight: 400
+    lineHeight: 1.5
+  label-caps:
+    fontFamily: "Inter"
+    fontSize: 0.75rem
+    fontWeight: 600
+    lineHeight: 1.2
+    letterSpacing: "0.08em"
+rounded:
+  sm: 6px
+  md: 10px
+  lg: 16px
+spacing:
+  xs: 4px
+  sm: 8px
+  md: 16px
+  lg: 24px
+  xl: 32px
+components:
+  app-shell:
+    backgroundColor: "{colors.neutral}"
+    textColor: "{colors.text-primary}"
+  sidebar:
+    backgroundColor: "{colors.primary}"
+    textColor: "{colors.text-inverse}"
+  card:
+    backgroundColor: "#FFFFFF"
+    rounded: "{rounded.md}"
+    padding: "{spacing.lg}"
+  button-primary:
+    backgroundColor: "{colors.primary}"
+    textColor: "{colors.text-inverse}"
+    rounded: "{rounded.sm}"
+  button-accent:
+    backgroundColor: "{colors.tertiary}"
+    textColor: "{colors.primary}"
+    rounded: "{rounded.sm}"
+  badge-highlight:
+    backgroundColor: "{colors.tertiary}"
+    textColor: "{colors.primary}"
+  badge-success:
+    backgroundColor: "{colors.success}"
+    textColor: "{colors.text-primary}"
+  badge-warning:
+    backgroundColor: "{colors.warning}"
+    textColor: "{colors.primary}"
+  badge-error:
+    backgroundColor: "{colors.error}"
+    textColor: "{colors.text-primary}"
 ---
 
-## Personalidade Visual
+## Overview
 
-Orun.AI deve parecer:
+Orun.AI combines a premium institutional identity with a practical operating console. The product should feel strategic, calm and precise, not mystical. The interface must communicate that agents are supervised systems with observable state, not magic black boxes.
 
-* sábio, mas não místico demais;
-* sofisticado, mas funcional;
-* tecnológico, mas humano;
-* confiável, auditável e estratégico;
-* brasileiro em origem, global em ambição.
+The visual system has two modes that share one identity: a dark, brand-heavy institutional layer and a lighter product layer for daily operations. Institutional surfaces introduce the brand. Product surfaces prioritize scanability, workflow state and data density.
 
-Evitar:
+## Colors
 
-* estética esotérica literal;
-* excesso de símbolos religiosos;
-* promessas de clarividência;
-* visual genérico de SaaS azul;
-* gradientes roxos/azuis dominantes sem identidade própria;
-* landing pages que pareçam apenas marketing quando o contexto pedir uma ferramenta real.
+The palette is anchored in dark ink, warm metallic gold and pale operational neutrals.
 
----
+- **Primary (`#0C0F1C`)** is the anchor for sidebars, headers, hero surfaces and serious actions.
+- **Secondary (`#3A4055`)** supports metadata, secondary text and structural chrome on dark surfaces.
+- **Tertiary (`#C7A347`)** is the signature accent for highlights, premium states and selected calls to action.
+- **Neutral (`#EEF1F6`)** is the primary application background and should keep dashboards bright and readable.
+- **Text Primary (`#111827`)** is the default ink on light surfaces.
+- **Text Inverse (`#F5F5F5`)** is reserved for dark branded surfaces.
 
-## Paleta Principal
+Use status colors only for system meaning. Gold is a brand accent, not a generic success state.
 
-| Token | Hex | Uso |
-|---|---:|---|
-| `orun-night` | `#0C0F1C` | Fundo institucional escuro, hero, sidebar premium |
-| `orun-gold` | `#C7A347` | Marca, detalhes nobres, estados de destaque |
-| `orun-gold-soft` | `#D4AF37` | Hover, ilustrações, brilhos discretos |
-| `orun-white` | `#F5F5F5` | Texto em fundo escuro |
-| `orun-ink` | `#111827` | Texto em fundo claro |
-| `orun-slate` | `#3A4055` | Texto secundário escuro |
-| `orun-mist` | `#EEF1F6` | Superfície clara |
-| `orun-line` | `#D8DCE7` | Bordas e divisores |
-| `orun-success` | `#22C55E` | Sucesso |
-| `orun-warning` | `#F59E0B` | Atenção |
-| `orun-error` | `#EF4444` | Erro |
+## Typography
 
-### Proporção Recomendada
+Typography should separate institution from operation.
 
-* Produto operacional: predominância clara, com `orun-night` em navegação e `orun-gold` como acento.
-* Institucional/hero: `orun-night` predominante, `orun-gold` para marca e CTAs, `orun-white` para leitura.
+- Headings use **Cormorant Garamond** to preserve the brand's sense of depth and authorship.
+- Body text, controls, tables and logs use **Inter** for clarity at dashboard density.
+- Uppercase labels should be sparse and used only for metadata, badges or micro-headings.
 
----
+Avoid long serif paragraphs, oversized hero copy inside the app shell and decorative typography in dense operational contexts.
 
-## Tipografia
+## Layout
 
-### Marca e Títulos Institucionais
+Layouts should favor clear navigation, strong grouping and measurable whitespace rather than decorative emptiness.
 
-Preferência:
+- The dashboard should use structured grids, quick metrics and adjacent analytical views.
+- Detail pages should prioritize status, next actions, execution history and important context near the top.
+- Forms should be linear, practical and broken into meaningful sections when they become long.
+- On mobile, preserve hierarchy before preserving density; stack cards and charts in a predictable order.
 
-* `Cormorant Garamond`
-* `Playfair Display`
-* `EB Garamond`
+Spacing should feel deliberate and compact, with `md` and `lg` used as the default rhythm units.
 
-Uso:
+## Elevation & Depth
 
-* logotipo;
-* títulos institucionais;
-* frases de impacto;
-* materiais comerciais.
+Depth should be restrained. Cards, modals and floating controls may use subtle shadows or contrast shifts, but the product should not resemble a glossy marketing site.
 
-Configuração:
+Use elevation to separate layers of interaction:
 
-* peso 600-700;
-* tracking leve, entre `0.02em` e `0.06em`, apenas em marca/títulos curtos;
-* evitar texto longo em fonte serifada ornamental.
+- base canvas for the app shell
+- card layer for content groups
+- modal layer for focused decisions
 
-### Produto e Interface
+Prefer border definition and contrast over heavy blur or exaggerated shadows.
 
-Preferência:
+## Shapes
 
-* `Inter`
-* `Open Sans`
-* system sans-serif como fallback.
+Shapes should be clean and slightly softened, not bubbly.
 
-Uso:
+- Default radius is `10px` for cards and containers.
+- Buttons and small controls use tighter rounding.
+- Avoid pill-heavy interfaces unless the component pattern already requires it.
 
-* dashboard;
-* formulários;
-* tabelas;
-* logs;
-* navegação;
-* componentes operacionais.
+The overall geometry should suggest precision and trust rather than playfulness.
 
----
+## Components
 
-## Componentes e UI
+Component styling should reinforce the product's operational tone.
 
-### Botões
+- **Sidebar:** dark, stable and brand-forward, acting as the system spine.
+- **Cards:** white or near-white surfaces with clear borders and concise padding.
+- **Primary buttons:** deep ink background with light text for decisive actions.
+- **Accent buttons or badges:** gold accents reserved for important, brand-relevant emphasis.
+- **Charts:** simple and readable first; avoid noisy gradients, 3D effects or ornamental legends.
 
-* Primário institucional: fundo `orun-gold`, texto `orun-night`.
-* Primário de produto: fundo `orun-night`, texto branco.
-* Secundário: fundo claro, borda `orun-line`, texto `orun-ink`.
-* Ações destrutivas: usar vermelho apenas quando a ação for realmente irreversível.
+Tables, logs and execution histories should privilege readability over visual flourish.
 
-### Cards
+## Do's and Don'ts
 
-* Raio máximo recomendado: `8px`.
-* Usar cards para itens repetidos, métricas, modais e ferramentas.
-* Evitar cards dentro de cards.
-* Seções de página devem ser layouts ou bandas, não pilhas de cartões decorativos.
+Do:
 
-### Dashboard
+- build interfaces that look auditable and intentional
+- balance premium brand cues with operational clarity
+- make workflow state, lead state and execution state obvious
+- preserve strong contrast on both light and dark surfaces
 
-Dashboards devem priorizar leitura rápida:
+Don't:
 
-* métricas densas e escaneáveis;
-* gráficos simples;
-* activity feed auditável;
-* filtros claros;
-* links para detalhes.
-
-Evitar estética de landing page dentro do dashboard.
-
-### Workflows
-
-Representações visuais de workflow devem mostrar:
-
-* trigger;
-* agentes envolvidos;
-* integrações MCP;
-* pontos de pausa/handoff;
-* estados de execução;
-* logs e resultado final.
-
----
-
-## Símbolos e Iconografia
-
-Símbolos permitidos:
-
-* olho abstrato;
-* círculo/caminhos;
-* céu estrelado minimalista;
-* linhas orbitais;
-* nós conectados;
-* referência sutil a tabuleiro/caminhos, sem copiar símbolos sagrados.
-
-Preferir ícones de biblioteca para interface operacional. Símbolos próprios devem ficar restritos a marca, hero, empty states especiais e materiais institucionais.
-
----
-
-## Tom de Voz
-
-Orun.AI fala como uma plataforma confiável de decisão e automação:
-
-* claro;
-* estratégico;
-* preciso;
-* respeitoso;
-* sem exageros mágicos;
-* sem prometer autonomia absoluta.
-
-Exemplos:
-
-* "Automatize a operação comercial com agentes auditáveis."
-* "Cada decisão com contexto, histórico e possibilidade de revisão humana."
-* "Agentes especializados para qualificar leads, preparar reuniões e manter o pipeline em movimento."
-
-Evitar:
-
-* "prever o futuro com certeza";
-* "substituir sua equipe";
-* "agentes totalmente autônomos";
-* linguagem religiosa aplicada ao produto.
-
----
-
-## Aplicação em Produto
-
-O produto deve transmitir força operacional. Para páginas internas:
-
-* usar layout denso e organizado;
-* reduzir ornamentos;
-* destacar status, próximos passos e ações;
-* registrar contexto e decisões;
-* manter idioma principal em português brasileiro.
-
-Para páginas públicas:
-
-* hero com a marca como primeiro sinal;
-* fundo visual real ou gerado, não apenas gradiente abstrato;
-* texto institucional curto;
-* CTA direto para demonstração ou acesso.
-
----
-
-## Critérios de Qualidade Visual
-
-Toda nova tela deve:
-
-* ter hierarquia clara;
-* funcionar em mobile e desktop;
-* não depender só de cor para comunicar estado;
-* não cortar texto;
-* não sobrepor elementos;
-* evitar paleta de uma nota só;
-* respeitar contraste;
-* deixar evidente o estado da entidade: lead, agente, workflow ou run.
+- use mystical iconography, religious symbolism or prophecy language
+- default to generic purple SaaS gradients
+- overload dashboards with nested cards or decorative containers
+- rely on color alone to communicate risk, failure or progress
